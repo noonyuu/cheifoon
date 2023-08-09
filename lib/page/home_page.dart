@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:sazikagen/constant/color_constant.dart';
-import '../model/card_model.dart';
+import '../constant/String_constant.dart';
+import 'package:sazikagen/model/bottle_model.dart';
+import '../model/recipe_model.dart';
 import '../controller/recipe_controller.dart';
+import '../controller/bottle_controller.dart';
 import '../component/card.dart';
+import '../component/bottle.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,12 +18,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<CardModel> _recipe = [];
+  List<RecipeModel> _recipepost = [];
+  List<BottleModel> _bottlepost = [];
 
   @override
   void initState() {
     super.initState();
-    _recipe = RecipeController().recipe; // RecipeControllerからデータを取得
+    _recipepost = RecipeController().recipe;
+    _bottlepost = BottleController().bottle; // RecipeControllerからデータを取得
   }
 
   @override
@@ -67,11 +74,11 @@ class _HomePageState extends State<HomePage> {
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2, // 列の数
                     ),
-                    itemCount: _recipe.length,
+                    itemCount: _recipepost.length,
                     itemBuilder: (context, index) {
-                      int reversedIndex = _recipe.length - 1 - index;
+                      int reversedIndex = _recipepost.length - 1 - index;
                       return CardComponent(
-                        recipe: _recipe[reversedIndex],
+                        recipe: _recipepost[reversedIndex],
                       );
                     }))
           ],
@@ -103,10 +110,17 @@ class _HomePageState extends State<HomePage> {
               Icon(
                 Icons.add_circle_outline,
               ),
-              SvgPicture.asset(
-                'assets/images/bottle.svg', // SVG画像のパスを指定
-                width: 100, // 画像の幅を調整
-                height: 100, // 画像の高さを調整
+              Row(
+                children: List.generate(_bottlepost.length, (index) {
+                  return Row(
+                    children: [
+                      BottleComponent(bottle: _bottlepost[index]),
+                      Container(
+                        width: 15,
+                      )
+                    ],
+                  );
+                }),
               ),
               Icon(
                 Icons.arrow_right_outlined,
@@ -117,6 +131,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-//カードウィジェット
 }
