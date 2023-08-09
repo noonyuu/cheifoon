@@ -43,9 +43,14 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.only(right: 16.0),
                 child: Align(
                   alignment: Alignment.centerRight,
-                  child: Icon(
-                    Icons.info_outline_rounded,
-                    color: ColorConst.black,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.info_outline_rounded,
+                      color: ColorConst.black,
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/info');
+                    },
                   ),
                 ),
               ),
@@ -98,35 +103,50 @@ class _HomePageState extends State<HomePage> {
           fit: BoxFit.fill,
         ),
       ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 16.0),
-          child: Row(
-            children: [
-              Icon(
-                Icons.arrow_left_outlined,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16.0, left: 12.0, right: 12.0),
+        child: Row(
+          children: [
+            Icon(
+              Icons.arrow_left_outlined,
+            ),
+            Icon(
+              Icons.add_circle_outline,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    // Icon(
+                    //   Icons.arrow_left_outlined,
+                    // ),
+                    // Icon(
+                    //   Icons.add_circle_outline,
+                    // ),
+                    Row(
+                      children: List.generate(_bottlepost.length, (index) {
+                        return Row(
+                          children: [
+                            BottleComponent(bottle: _bottlepost[index]),
+                            Container(
+                              width: 15,
+                            )
+                          ],
+                        );
+                      }),
+                    ),
+                  ],
+                ),
               ),
-              Icon(
-                Icons.add_circle_outline,
-              ),
-              Row(
-                children: List.generate(_bottlepost.length, (index) {
-                  return Row(
-                    children: [
-                      BottleComponent(bottle: _bottlepost[index]),
-                      Container(
-                        width: 15,
-                      )
-                    ],
-                  );
-                }),
-              ),
-              Icon(
-                Icons.arrow_right_outlined,
-              ),
-            ],
-          ),
+            ),
+            Icon(
+              Icons.arrow_right_outlined,
+            ),
+          ],
         ),
       ),
     );
