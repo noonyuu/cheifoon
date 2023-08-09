@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sazikagen/constant/color_constant.dart';
-import '../model/card_model.dart';
+import '../constant/String_constant.dart';
+import 'package:sazikagen/model/bottle_model.dart';
+import '../model/recipe_model.dart';
 import '../controller/recipe_controller.dart';
+import '../controller/bottle_controller.dart';
 import '../component/card.dart';
+import '../component/bottle.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,12 +16,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<CardModel> _recipe = [];
+  List<RecipeModel> _recipepost = [];
+  List<BottleModel> _bottlepost = [];
 
   @override
   void initState() {
     super.initState();
-    _recipe = RecipeController().recipe; // RecipeControllerからデータを取得
+    _recipepost = RecipeController().recipe;
+    _bottlepost = BottleController().bottle; // RecipeControllerからデータを取得
   }
 
   @override
@@ -32,7 +38,7 @@ class _HomePageState extends State<HomePage> {
           child: Row(
             children: [
               Image.asset(
-                'assets/images/apptitle.png',
+                StringConst.titlePath,
                 height: 150,
                 width: 330,
               ),
@@ -61,16 +67,17 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 30,
           ),
+          //レシピ表示
           Expanded(
               child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2, // 列の数
                   ),
-                  itemCount: _recipe.length,
+                  itemCount: _recipepost.length,
                   itemBuilder: (context, index) {
-                    int reversedIndex = _recipe.length - 1 - index;
+                    int reversedIndex = _recipepost.length - 1 - index;
                     return CardComponent(
-                      recipe: _recipe[reversedIndex],
+                      recipe: _recipepost[reversedIndex],
                     );
                   }))
         ],
@@ -90,24 +97,34 @@ class _HomePageState extends State<HomePage> {
           ),
           borderRadius: BorderRadius.circular(30),
         ),
-        child: SingleChildScrollView(
+        child: Scrollbar(
+            child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.arrow_left_outlined,
               ),
-              Icon(
+              const Icon(
                 Icons.add_circle_outline,
               ),
-              Image.asset('assets/images/bottle.png'),
-              Icon(
+              Row(
+                children: List.generate(_bottlepost.length, (index) {
+                  return Row(
+                    children: [
+                      BottleComponent(bottle: _bottlepost[index]),
+                      Container(
+                        width: 15,
+                      )
+                    ],
+                  );
+                }),
+              ),
+              const Icon(
                 Icons.arrow_right_outlined,
               ),
             ],
           ),
-        ));
+        )));
   }
-
-//カードウィジェット
 }

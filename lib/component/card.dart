@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sazikagen/constant/color_constant.dart';
-import '../model/card_model.dart';
-import '../controller/recipe_controller.dart';
+import '../model/recipe_model.dart';
 
 class CardComponent extends StatelessWidget {
-  final CardModel _recipe;
+  final RecipeModel _recipe;
   const CardComponent({
     Key? key,
-    required CardModel recipe,
+    required RecipeModel recipe,
   }) : _recipe = recipe;
   @override
   Widget build(BuildContext context) {

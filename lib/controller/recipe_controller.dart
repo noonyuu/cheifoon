@@ -1,24 +1,40 @@
-import '../model/card_model.dart';
+import '../model/recipe_model.dart';
 
 class RecipeController {
-  final List<CardModel> _recipe = [
-    CardModel(
+  final List<RecipeModel> _recipe = [
+    RecipeModel(
         recipeId: 1,
         title: 'オムライス',
         imagePath: 'assets/images/recipe/recipe1.jpg'),
-    CardModel(
+    RecipeModel(
         recipeId: 2,
         title: 'ハンバーグ',
         imagePath: 'assets/images/recipe/recipe2.jpg'),
-    CardModel(
+    RecipeModel(
         recipeId: 3,
         title: 'オムライス',
         imagePath: 'assets/images/recipe/recipe1.jpg'),
-    CardModel(
+    RecipeModel(
+        recipeId: 4,
+        title: 'オムライス',
+        imagePath: 'assets/images/recipe/recipe2.jpg'),
+    RecipeModel(
+        recipeId: 4,
+        title: 'オムライス',
+        imagePath: 'assets/images/recipe/recipe2.jpg'),
+    RecipeModel(
+        recipeId: 4,
+        title: 'オムライス',
+        imagePath: 'assets/images/recipe/recipe2.jpg'),
+    RecipeModel(
+        recipeId: 4,
+        title: 'オムライス',
+        imagePath: 'assets/images/recipe/recipe2.jpg'),
+    RecipeModel(
         recipeId: 4,
         title: 'オムライス',
         imagePath: 'assets/images/recipe/recipe2.jpg'),
   ];
 
-  List<CardModel> get recipe => _recipe;
+  List<RecipeModel> get recipe => _recipe;
 }
