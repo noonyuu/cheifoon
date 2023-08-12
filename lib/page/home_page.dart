@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sazikagen/constant/color_constant.dart';
 import '../constant/String_constant.dart';
 import 'package:sazikagen/model/bottle_model.dart';
+import '../db/database_helper.dart';
 import '../model/recipe_model.dart';
 import '../controller/recipe_controller.dart';
 import '../controller/bottle_controller.dart';
@@ -20,10 +21,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<RecipeModel> _recipepost = [];
   List<BottleModel> _bottlepost = [];
+final dbHelper = DatabaseHelper.instance;
 
   @override
   void initState() {
     super.initState();
+    _insert();
+    _query();
     _recipepost = RecipeController().recipe;
     _bottlepost = BottleController().bottle; // RecipeControllerからデータを取得
   }
@@ -150,5 +154,17 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  void _insert() async {
+    Map<String, dynamic> row = {DatabaseHelper.menuName: 'オムライス', DatabaseHelper.menuImage: '~.png'};
+    final id = await dbHelper.insert(row);
+    print('登録しました。id: $id');
+  }
+
+    void _query() async {
+    final allRows = await dbHelper.queryAllRows();
+    print('全てのデータを照会しました。');
+    allRows.forEach(print);
   }
 }
