@@ -20,7 +20,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<RecipeModel> _recipepost = [];
-  // List<Map<String, dynamic>> _recipepost = [];
   List<BottleModel> _bottlepost = [];
   final dbHelper = DatabaseHelper.instance;
   bool isMenuLoding = true;
@@ -54,7 +53,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     if (isMenuLoding && isBottleLoding) {
       return Center(
-          // プログレスインディケーターの表示
+      // プログレスインディケーターの表示
         child: SizedBox(
         height: 50,
         width: 50,
@@ -134,10 +133,8 @@ class _HomePageState extends State<HomePage> {
             'assets/images/bac.svg',
             fit: BoxFit.fill,
           ),
-          Positioned(
-            top: 40.0,
-            left: 12.0,
-            right: 12.0,
+          Padding(
+            padding: EdgeInsets.only(right: 12, left: 12, top: 12),
             child: Row(
               children: [
                 // Icon(
@@ -177,6 +174,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // void _insert() async {
+  //   Map<String, dynamic> row = {DatabaseHelper.menuName: 'オムライス', DatabaseHelper.menuImage: 'recipe1.jpg'};
+  //   final id = await dbHelper.insert(row);
+  //   print('登録しました。id: $id');
+  // }
   void _insert() async {
     Map<String, dynamic> row = {DatabaseHelper.seasoningName: '醤油', DatabaseHelper.teaSecond: 1.2};
     final id = await dbHelper.insert(row);

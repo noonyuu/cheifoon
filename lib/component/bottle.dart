@@ -25,6 +25,7 @@ class BottleComponent extends StatelessWidget {
 
   Widget _tag() {
     return Container(
+      alignment: Alignment.center,
       width: 40,
       height: 20,
       decoration: BoxDecoration(

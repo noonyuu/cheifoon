@@ -10,10 +10,12 @@ class CardComponent extends StatelessWidget {
   }) : _recipe = recipe;
   @override
   Widget build(BuildContext context) {
-    return _Recipe();
+    return _Recipe(context);
   }
 
-  Widget _Recipe() {
+  Widget _Recipe(BuildContext context) {
+    double cardSizeLeft = 140;
+    double cardSizeRight = 150;
     return InkWell(
       child: Card(
         color: ColorConst.white,
@@ -21,8 +23,8 @@ class CardComponent extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
         ),
         child: Container(
-          height: 140,
-          width: 150,
+          height: cardSizeLeft,
+          width: cardSizeRight,
           decoration: BoxDecoration(
             border: Border.all(
               color: ColorConst.mainColor, // 枠線の色
@@ -50,8 +52,8 @@ class CardComponent extends StatelessWidget {
                   child: Container(
                     alignment: Alignment.center,
                     color: ColorConst.background,
-                    height: 51,
-                    width: 170,
+                    height: cardSizeLeft * 0.3,
+                    width: cardSizeRight,
                     child: Text('${_recipe.title}'),
                   )),
             ],
