@@ -1,16 +1,31 @@
+import '../db/database_helper.dart';
 import '../model/recipe_model.dart';
 
 class RecipeController {
-  final List<RecipeModel> _recipe = [
-    RecipeModel(recipeId: 1, title: 'オムライス', imagePath: 'assets/images/recipe/sample/recipe1.jpg'),
-    RecipeModel(recipeId: 2, title: 'ハンバーグ', imagePath: 'assets/images/recipe/sample/recipe2.jpg'),
-    RecipeModel(recipeId: 3, title: 'オムライス', imagePath: 'assets/images/recipe/sample/recipe1.jpg'),
-    RecipeModel(recipeId: 4, title: 'オムライス', imagePath: 'assets/images/recipe/sample/recipe2.jpg'),
-    RecipeModel(recipeId: 4, title: 'オムライス', imagePath: 'assets/images/recipe/sample/recipe2.jpg'),
-    RecipeModel(recipeId: 4, title: 'オムライス', imagePath: 'assets/images/recipe/sample/recipe2.jpg'),
-    RecipeModel(recipeId: 4, title: 'オムライス', imagePath: 'assets/images/recipe/sample/recipe2.jpg'),
-    RecipeModel(recipeId: 4, title: 'オムライス', imagePath: 'assets/images/recipe/sample/recipe2.jpg'),
-  ];
+  static final dbHelper = DatabaseHelper.instance;
+  static List<Map<String, dynamic>> _menuTable = [];
+  static List<RecipeModel> _recipe = [];
 
-  List<RecipeModel> get recipe => _recipe;
+  static Future<List<RecipeModel>> menuList() async {
+    await _queryMenuTable();
+    await _initializeRecipe();
+    return _recipe;
+  }
+
+  // メニューテーブルの照会
+  static Future<void> _queryMenuTable() async {
+    final allRows = await dbHelper.queryMenuTable();
+    _menuTable.addAll(allRows);
+  }
+
+  // レシピの初期化
+  static Future<void> _initializeRecipe() async {
+    for (var row in _menuTable) {
+      _recipe.add(RecipeModel(
+        recipeId: row['menu_id'],
+        title: row['menu_name'],
+        imagePath: 'assets/images/recipe/sample/${row['menu_image']}',
+      ));
+    }
+  }
 }

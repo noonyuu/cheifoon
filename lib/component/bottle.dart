@@ -26,6 +26,7 @@ class BottleComponent extends StatelessWidget {
   Widget _tag() {
     return Container(
       width: 40,
+      height: 20,
       decoration: BoxDecoration(
         color: ColorConst.tag,
         border: Border.all(
@@ -38,7 +39,7 @@ class BottleComponent extends StatelessWidget {
       child: Text(
         '${_bottle.bottleTitle}',
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 7),
+        style: TextStyle(fontSize: 10),
       ),
     );
   }

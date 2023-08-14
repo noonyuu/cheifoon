@@ -20,118 +20,139 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<RecipeModel> _recipepost = [];
+  // List<Map<String, dynamic>> _recipepost = [];
   List<BottleModel> _bottlepost = [];
-final dbHelper = DatabaseHelper.instance;
+  final dbHelper = DatabaseHelper.instance;
+  bool isMenuLoding = true;
+  bool isBottleLoding = true;
 
   @override
   void initState() {
     super.initState();
-    _insert();
-    _query();
-    _recipepost = RecipeController().recipe;
-    _bottlepost = BottleController().bottle; // RecipeControllerからデータを取得
+    _initializeState();
+  }
+
+  Future<void> _initializeState() async {
+    // dbHelper.queryAllRows();
+    // _insert();
+    // _query();
+    await RecipeController.menuList().then((menuList) {
+      setState(() {
+        _recipepost = menuList;
+        isMenuLoding = false;
+      });
+    }); // RecipeControllerからデータを取得
+    await BottleController.bottleList().then((bottleList) {
+      setState(() {
+        _bottlepost = bottleList;
+        isBottleLoding = false;
+      });
+    }); // BottleControllerからデータを取得
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: ColorConst.background,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(96.0),
-          child: AppBar(
-            backgroundColor: Colors.transparent, //背景を透明にする
-            elevation: 0, //appberの影
-            flexibleSpace: Container(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.info_outline_rounded,
-                      color: ColorConst.black,
+    if (isMenuLoding && isBottleLoding) {
+      return Center(
+          // プログレスインディケーターの表示
+        child: SizedBox(
+        height: 50,
+        width: 50,
+        child: CircularProgressIndicator(),
+      ));
+    } else {
+      return SafeArea(
+        child: Scaffold(
+          backgroundColor: ColorConst.background,
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(96.0),
+            child: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              flexibleSpace: Stack(
+                children: [
+                  Positioned.fill(
+                    child: SvgPicture.asset(
+                      'assets/images/appbar.svg',
+                      fit: BoxFit.cover,
                     ),
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/info');
-                    },
                   ),
-                ),
-              ),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/appBar.png'),
-                  fit: BoxFit.fill,
-                  alignment: Alignment.topCenter,
-                ),
+                  Positioned(
+                    top: 15.0,
+                    right: 16.0,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.info_outline_rounded,
+                        color: ColorConst.black,
+                      ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/info');
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
+          body: Column(
+            children: [
+              const SizedBox(
+                height: 30,
+              ),
+              //調味料表示
+              _Seasoning(),
+              const SizedBox(
+                height: 30,
+              ),
+              Expanded(
+                  child: GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2, // 列の数
+                      ),
+                      itemCount: _recipepost.length,
+                      itemBuilder: (context, index) {
+                        int reversedIndex = _recipepost.length - 1 - index;
+                        return CardComponent(
+                          recipe: _recipepost[reversedIndex],
+                        );
+                      }))
+            ],
+          ),
         ),
-        body: Column(
-          children: [
-            const SizedBox(
-              height: 30,
-            ),
-            //調味料表示
-            _Seasoning(),
-            const SizedBox(
-              height: 30,
-            ),
-            Expanded(
-                child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, // 列の数
-                    ),
-                    itemCount: _recipepost.length,
-                    itemBuilder: (context, index) {
-                      int reversedIndex = _recipepost.length - 1 - index;
-                      return CardComponent(
-                        recipe: _recipepost[reversedIndex],
-                      );
-                    }))
-          ],
-        ),
-      ),
-    );
+      );
+    }
   }
 
 //調味料ウィジェット
   Widget _Seasoning() {
     return Container(
       width: MediaQuery.of(context).size.width * 0.9,
-      height: MediaQuery.of(context).size.height * 0.18,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/bac.png'), // Background image path
-          fit: BoxFit.fill,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 16.0, left: 12.0, right: 12.0),
-        child: Row(
-          children: [
-            Icon(
-              Icons.arrow_left_outlined,
-            ),
-            Icon(
-              Icons.add_circle_outline,
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    // Icon(
-                    //   Icons.arrow_left_outlined,
-                    // ),
-                    // Icon(
-                    //   Icons.add_circle_outline,
-                    // ),
-                    Row(
+      height: MediaQuery.of(context).size.height * 0.2,
+      child: Stack(
+        children: [
+          SvgPicture.asset(
+            'assets/images/bac.svg',
+            fit: BoxFit.fill,
+          ),
+          Positioned(
+            top: 40.0,
+            left: 12.0,
+            right: 12.0,
+            child: Row(
+              children: [
+                // Icon(
+                //   Icons.arrow_left_outlined,
+                // ),
+                Icon(
+                  Icons.add_circle_outline,
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
                       children: List.generate(_bottlepost.length, (index) {
                         return Row(
                           children: [
@@ -143,28 +164,30 @@ final dbHelper = DatabaseHelper.instance;
                         );
                       }),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                // Icon(
+                //   Icons.arrow_right_outlined,
+                // ),
+              ],
             ),
-            Icon(
-              Icons.arrow_right_outlined,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   void _insert() async {
-    Map<String, dynamic> row = {DatabaseHelper.menuName: 'オムライス', DatabaseHelper.menuImage: '~.png'};
+    Map<String, dynamic> row = {DatabaseHelper.seasoningName: '醤油', DatabaseHelper.teaSecond: 1.2};
     final id = await dbHelper.insert(row);
     print('登録しました。id: $id');
   }
 
-    void _query() async {
+  void _query() async {
     final allRows = await dbHelper.queryAllRows();
     print('全てのデータを照会しました。');
-    allRows.forEach(print);
+    setState(() {
+      // _recipepost = allRows;
+    });
   }
 }
