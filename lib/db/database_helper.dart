@@ -100,7 +100,7 @@ class DatabaseHelper {
 
   Future<int> insert(Map<String, dynamic> row) async {
     Database? db = await instance.database;
-    return await db!.insert(seasoningTable, row);
+    return await db!.insert(menuTable, row);
   }
 
   Future<List<Map<String, dynamic>>> queryAllRows() async {
@@ -108,7 +108,7 @@ class DatabaseHelper {
     // await db!.query(adminSeasoning);
     // await db.query(seasoningTable);
     // await db.query(recipeTable);
-    return await db!.query(menuTable);
+    return await db!.query(seasoningTable);
   }
 
   Future<List<Map<String, dynamic>>> queryMenuTable() async {
@@ -120,4 +120,25 @@ class DatabaseHelper {
     Database? db = await instance.database;
     return await db!.query(seasoningTable);
   }
+
+  // test data
+    Future<int> inserta(Map<String, dynamic> row) async {
+    Database? db = await instance.database;
+    return await db!.insert(menuTable, row);
+  }
+    Future<int> insertb(Map<String, dynamic> row) async {
+    Database? db = await instance.database;
+    return await db!.insert(adminSeasoning, row);
+  }
+    Future<int> insertc(Map<String, dynamic> row) async {
+    Database? db = await instance.database;
+    return await db!.insert(seasoningTable, row);
+  }
+    // 削除処理
+  Future<int> delete() async {
+    Database? db = await instance.database;
+    return await db!.delete(seasoningTable);
+  }
 }
+
+

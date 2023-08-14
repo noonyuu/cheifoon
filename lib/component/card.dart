@@ -14,8 +14,7 @@ class CardComponent extends StatelessWidget {
   }
 
   Widget _Recipe(BuildContext context) {
-    double cardSizeLeft = 140;
-    double cardSizeRight = 150;
+    double cardSize = MediaQuery.of(context).size.width / 2;
     return InkWell(
       child: Card(
         color: ColorConst.white,
@@ -23,8 +22,8 @@ class CardComponent extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
         ),
         child: Container(
-          height: cardSizeLeft,
-          width: cardSizeRight,
+          height: cardSize,
+          width: cardSize,
           decoration: BoxDecoration(
             border: Border.all(
               color: ColorConst.mainColor, // 枠線の色
@@ -34,15 +33,16 @@ class CardComponent extends StatelessWidget {
           ),
           child: Column(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(24.0),
-                  topRight: Radius.circular(24.0),
+              Container(
+                height: cardSize * 0.6,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(24.0),
+                    topRight: Radius.circular(24.0),
+                  ),
+                  child: Image.asset('${_recipe.imagePath}'),
+                  // child: Image.asset('assets/images/appBar.png'),
                 ),
-                child: Image.asset('${_recipe.imagePath}'),
-              ),
-              const SizedBox(
-                height: 5,
               ),
               ClipRRect(
                   borderRadius: BorderRadius.only(
@@ -52,8 +52,8 @@ class CardComponent extends StatelessWidget {
                   child: Container(
                     alignment: Alignment.center,
                     color: ColorConst.background,
-                    height: cardSizeLeft * 0.3,
-                    width: cardSizeRight,
+                    height: cardSize * 0.3,
+                    width: cardSize,
                     child: Text('${_recipe.title}'),
                   )),
             ],

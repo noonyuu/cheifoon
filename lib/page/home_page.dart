@@ -21,6 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<RecipeModel> _recipepost = [];
   List<BottleModel> _bottlepost = [];
+  List<Map<String, dynamic>> _queryResult = [];
   final dbHelper = DatabaseHelper.instance;
   bool isMenuLoding = true;
   bool isBottleLoding = true;
@@ -32,10 +33,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _initializeState() async {
-    // dbHelper.queryAllRows();
+    // TODO: コメントアウト４行はずして読み込めばSQLiteにデータが入るけど、もどしわすれないように(test配置なので毎回読み込むたびにinsertされます)
     // _insert();
-    // _query();
+    // _inserta();
+    // _insertb();
+    // _insertc();
+
+    // test：調味料のデータを削除するときに使う
+    // _delete();
     await RecipeController.menuList().then((menuList) {
+      _query();
       setState(() {
         _recipepost = menuList;
         isMenuLoding = false;
@@ -53,8 +60,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     if (isMenuLoding && isBottleLoding) {
       return Center(
-      // プログレスインディケーターの表示
-        child: SizedBox(
+          // プログレスインディケーターの表示
+          child: SizedBox(
         height: 50,
         width: 50,
         child: CircularProgressIndicator(),
@@ -134,12 +141,10 @@ class _HomePageState extends State<HomePage> {
             fit: BoxFit.fill,
           ),
           Padding(
-            padding: EdgeInsets.only(right: 12, left: 12, top: 12),
+            // TODO ： 綺麗に書く
+            padding: EdgeInsets.only(right: 12, left: 12, top: _queryResult.length == 0 ? MediaQuery.of(context).size.height * 0.2 * 0.45 : MediaQuery.of(context).size.height * 0.2 * 0.1),
             child: Row(
               children: [
-                // Icon(
-                //   Icons.arrow_left_outlined,
-                // ),
                 Icon(
                   Icons.add_circle_outline,
                 ),
@@ -174,14 +179,28 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // void _insert() async {
-  //   Map<String, dynamic> row = {DatabaseHelper.menuName: 'オムライス', DatabaseHelper.menuImage: 'recipe1.jpg'};
-  //   final id = await dbHelper.insert(row);
-  //   print('登録しました。id: $id');
-  // }
+// test data
   void _insert() async {
-    Map<String, dynamic> row = {DatabaseHelper.seasoningName: '醤油', DatabaseHelper.teaSecond: 1.2};
+    Map<String, dynamic> row = {DatabaseHelper.menuName: 'オムライス', DatabaseHelper.menuImage: 'recipe1.jpg'};
     final id = await dbHelper.insert(row);
+    print('登録しました。id: $id');
+  }
+
+  void _inserta() async {
+    Map<String, dynamic> row = {DatabaseHelper.menuName: 'ハンバーグ', DatabaseHelper.menuImage: 'recipe2.jpg'};
+    final id = await dbHelper.inserta(row);
+    print('登録しました。id: $id');
+  }
+
+  void _insertb() async {
+    Map<String, dynamic> row = {DatabaseHelper.ASeasoningName: '醤油', DatabaseHelper.AteaSecond: 1.2};
+    final id = await dbHelper.insertb(row);
+    print('登録しました。id: $id');
+  }
+
+  void _insertc() async {
+    Map<String, dynamic> row = {DatabaseHelper.seasoningName: '醤油', DatabaseHelper.teaSecond: 1.2};
+    final id = await dbHelper.insertc(row);
     print('登録しました。id: $id');
   }
 
@@ -189,7 +208,13 @@ class _HomePageState extends State<HomePage> {
     final allRows = await dbHelper.queryAllRows();
     print('全てのデータを照会しました。');
     setState(() {
-      // _recipepost = allRows;
+      _queryResult = allRows;
     });
+  }
+
+  void _delete() async {
+    final id = await dbHelper.delete();
+    _query();
+    print('削除しました。id: $id');
   }
 }
