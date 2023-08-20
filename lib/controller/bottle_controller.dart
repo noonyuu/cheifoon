@@ -1,3 +1,5 @@
+import 'package:flutter/src/material/dropdown.dart';
+
 import '../db/database_helper.dart';
 import '../model/bottle_model.dart';
 //import '../constant/String_constant.dart';
@@ -6,6 +8,8 @@ class BottleController {
   static final dbHelper = DatabaseHelper.instance;
   static List<Map<String, dynamic>> _bottleTable = [];
   static List<BottleModel> _bottle = [];
+
+static List<BottleModel> get bottleLists => _bottle;
 
   static Future<List<BottleModel>> bottleList() async {
     await _queryBottleTable();
@@ -28,6 +32,8 @@ class BottleController {
       ));
     }
   }
+
+  map(DropdownMenuItem<BottleModel> Function(dynamic bottle) param0) {}
   // final List<BottleModel> _bottle = [
   //   BottleModel(
   //     bottleId: 1,
