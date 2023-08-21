@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sazikagen/constant/color_constant.dart';
+import '../component/appbar.dart';
+import 'addalert.dart';
 import '../constant/String_constant.dart';
 import 'package:sazikagen/model/bottle_model.dart';
 import '../db/database_helper.dart';
@@ -34,10 +36,10 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _initializeState() async {
     // TODO: コメントアウト４行はずして読み込めばSQLiteにデータが入るけど、もどしわすれないように(test配置なので毎回読み込むたびにinsertされます)
-    // _insert();
-    // _inserta();
-    // _insertb();
-    // _insertc();
+    // _insert(); //オムライス
+    // _inserta(); //ハンバーグ
+    // _insertb(); //a_醤油
+    // _insertc(); //醤油
 
     // test：調味料のデータを削除するときに使う
     // _delete();
@@ -51,6 +53,7 @@ class _HomePageState extends State<HomePage> {
     await BottleController.bottleList().then((bottleList) {
       setState(() {
         _bottlepost = bottleList;
+        print(_bottlepost);
         isBottleLoding = false;
       });
     }); // BottleControllerからデータを取得
@@ -70,36 +73,7 @@ class _HomePageState extends State<HomePage> {
       return SafeArea(
         child: Scaffold(
           backgroundColor: ColorConst.background,
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(96.0),
-            child: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              flexibleSpace: Stack(
-                children: [
-                  Positioned.fill(
-                    child: SvgPicture.asset(
-                      'assets/images/appbar.svg',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Positioned(
-                    top: 15.0,
-                    right: 16.0,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.info_outline_rounded,
-                        color: ColorConst.black,
-                      ),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/info');
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          appBar: AppBarComponentWidget(isInfoIconEnabled: true,),
           body: Column(
             children: [
               const SizedBox(
@@ -111,17 +85,22 @@ class _HomePageState extends State<HomePage> {
                 height: 30,
               ),
               Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10, left: 10),
                   child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2, // 列の数
-                      ),
-                      itemCount: _recipepost.length,
-                      itemBuilder: (context, index) {
-                        int reversedIndex = _recipepost.length - 1 - index;
-                        return CardComponent(
-                          recipe: _recipepost[reversedIndex],
-                        );
-                      }))
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2, // 列の数
+                    ),
+                    itemCount: _recipepost.length,
+                    itemBuilder: (context, index) {
+                      int reversedIndex = _recipepost.length - 1 - index;
+                      return CardComponent(
+                        recipe: _recipepost[reversedIndex],
+                      );
+                    },
+                  ),
+                ),
+              ),
             ],
           ),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:sazikagen/component/appbar.dart';
 
 import 'package:sazikagen/constant/color_constant.dart';
 import '../../controller/bottle_controller.dart';
@@ -117,6 +118,7 @@ class _AlertState extends State<Alert> {
       child: Scaffold(
         // 全体画面
         backgroundColor: ColorConst.background,
+        appBar: AppBarComponentWidget(isInfoIconEnabled: false,),
         body: Column(
           children: [
             const SizedBox(
