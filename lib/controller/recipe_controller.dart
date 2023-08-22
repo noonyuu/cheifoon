@@ -1,3 +1,7 @@
+import 'dart:typed_data';
+
+import 'package:flutter/material.dart';
+
 import '../db/database_helper.dart';
 import '../model/recipe_model.dart';
 
@@ -21,10 +25,11 @@ class RecipeController {
   // レシピの初期化
   static Future<void> _initializeRecipe() async {
     for (var row in _menuTable) {
+      Uint8List imageBytes = row['menu_image'];
       _recipe.add(RecipeModel(
         recipeId: row['menu_id'],
         title: row['menu_name'],
-        imagePath: 'assets/images/recipe/sample/${row['menu_image']}',
+        imagePath: imageBytes, // バイト配列を画像に変換
       ));
     }
   }

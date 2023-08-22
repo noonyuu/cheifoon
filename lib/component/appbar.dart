@@ -42,7 +42,7 @@ class _AppBarComponentWidgetState extends State<AppBarComponentWidget> {
               right: 16.0,
               child: IconButton(
                 icon: Icon(
-                  Icons.info_outline_rounded,
+                  Icons.contact_support_outlined,
                   color: ColorConst.black,
                 ),
                 onPressed: widget.isInfoIconEnabled

@@ -1,4 +1,8 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sazikagen/constant/color_constant.dart';
 import '../component/appbar.dart';
 import 'addalert.dart';
@@ -53,7 +57,7 @@ class _HomePageState extends State<HomePage> {
     await BottleController.bottleList().then((bottleList) {
       setState(() {
         _bottlepost = bottleList;
-        print(_bottlepost);
+        print('_bottlepost.length: ${_bottlepost.length}');
         isBottleLoding = false;
       });
     }); // BottleControllerからデータを取得
@@ -73,7 +77,9 @@ class _HomePageState extends State<HomePage> {
       return SafeArea(
         child: Scaffold(
           backgroundColor: ColorConst.background,
-          appBar: AppBarComponentWidget(isInfoIconEnabled: true,),
+          appBar: AppBarComponentWidget(
+            isInfoIconEnabled: true,
+          ),
           body: Column(
             children: [
               const SizedBox(
@@ -103,6 +109,13 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: ColorConst.mainColor,
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Alert()));
+            },
+            child: Icon(Icons.add),
+          ),
         ),
       );
     }
@@ -121,7 +134,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Padding(
             // TODO ： 綺麗に書く
-            padding: EdgeInsets.only(right: 12, left: 12, top: _queryResult.length == 0 ? MediaQuery.of(context).size.height * 0.2 * 0.45 : MediaQuery.of(context).size.height * 0.2 * 0.1),
+            padding: EdgeInsets.only(right: 12, left: 12, top: _bottlepost.length == 0 ? MediaQuery.of(context).size.height * 0.2 * 0.05 : MediaQuery.of(context).size.height * 0.2 * 0.1),
             child: Row(
               children: [
                 Icon(
@@ -131,25 +144,31 @@ class _HomePageState extends State<HomePage> {
                   width: 10,
                 ),
                 Expanded(
-                  child: SingleChildScrollView(
+                  child: ReorderableListView(
                     scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(_bottlepost.length, (index) {
-                        return Row(
+                    onReorder: (int oldIndex, int newIndex) {
+                      print(oldIndex);
+                      setState(() {
+                        if (oldIndex < newIndex) {
+                          newIndex -= 1;
+                        }
+                        final BottleModel bottle = _bottlepost.removeAt(oldIndex);
+                        _bottlepost.insert(newIndex, bottle);
+                      });
+                    },
+                    children: _bottlepost.map((BottleModel bottle) {
+                      return Container(
+                        key: ValueKey(bottle.bottleId), // Set a unique key for each item
+                        child: Row(
                           children: [
-                            BottleComponent(bottle: _bottlepost[index]),
-                            Container(
-                              width: 15,
-                            )
+                            BottleComponent(bottle: bottle),
+                            SizedBox(width: 15),
                           ],
-                        );
-                      }),
-                    ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
-                // Icon(
-                //   Icons.arrow_right_outlined,
-                // ),
               ],
             ),
           ),
@@ -160,7 +179,9 @@ class _HomePageState extends State<HomePage> {
 
 // test data
   void _insert() async {
-    Map<String, dynamic> row = {DatabaseHelper.menuName: 'オムライス', DatabaseHelper.menuImage: 'recipe1.jpg'};
+    Uint8List imageBytes = (await rootBundle.load('assets/images/recipe/sample/curry.png')).buffer.asUint8List();
+
+    Map<String, dynamic> row = {DatabaseHelper.menuName: 'カレー', DatabaseHelper.menuImage: imageBytes};
     final id = await dbHelper.insert(row);
     print('登録しました。id: $id');
   }

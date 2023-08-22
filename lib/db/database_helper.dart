@@ -80,7 +80,7 @@ class DatabaseHelper {
       await db.execute('''CREATE TABLE $menuTable (
         $menuId INTEGER PRIMARY KEY AUTOINCREMENT,
         $menuName TEXT NOT NULL,
-        $menuImage TEXT NOT NULL
+        $menuImage BLOB NOT NULL
       )''');
       // レシピテーブル
       await db.execute('''CREATE TABLE $recipeTable (

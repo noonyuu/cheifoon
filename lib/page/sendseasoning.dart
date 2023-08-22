@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:sazikagen/component/appbar.dart';
-
 import 'package:sazikagen/constant/color_constant.dart';
 import '../../controller/bottle_controller.dart';
 import 'package:sazikagen/model/bottle_model.dart';
 import '../model/rectangle_model.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class Alert extends StatefulWidget {
-  const Alert({Key? key}) : super(key: key);
+// import '../constant/String_constant.dart';
+
+class Send extends StatefulWidget {
+  const Send({Key? key}) : super(key: key);
 
   @override
-  State<Alert> createState() => _AlertState();
+  State<Send> createState() => _SendState();
 }
 
-class _AlertState extends State<Alert> {
+class _SendState extends State<Send> {
   List<seasoningItem> _rectangleList = []; // 四角形を追加していくためのリスト
   List<BottleModel> _bottleController = []; // ドロップダウンリストに表示するためのリスト
   String _recipeName = ''; // レシピ名を入れるための変数
@@ -40,8 +42,11 @@ class _AlertState extends State<Alert> {
             width: MediaQuery.of(context).size.width * 0.8,
             height: MediaQuery.of(context).size.height * 0.15,
             decoration: ShapeDecoration(
-              color: Color(0xFFFFEDAE),
-              shape: RoundedRectangleBorder(side: BorderSide(width: 0.50)),
+              color: ColorConst.recipename,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                side: BorderSide(width: 0.50),
+              ),
             ),
           ),
         ),
@@ -78,8 +83,8 @@ class _AlertState extends State<Alert> {
     );
   }
 
-// 追加ボタンが押された時
-  Widget _buildAddButton() {
+// 送信ボタンが押された時
+  Widget _buildSendButton() {
     return IconButton(
       onPressed: () {
         setState(() {
@@ -87,10 +92,9 @@ class _AlertState extends State<Alert> {
           _rectangleList.add(seasoningItem());
         });
       },
-      icon: Icon(
-        Icons.add_circle,
-        size: 20, // アイコンのサイズ指定
-        color: Colors.black, // アイコンの色指定
+      icon: FaIcon(
+        FontAwesomeIcons.paperPlane,
+        color: ColorConst.black,
       ),
     );
   }
@@ -116,9 +120,11 @@ class _AlertState extends State<Alert> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBarComponentWidget(
+          isInfoIconEnabled: false,
+        ),
         // 全体画面
         backgroundColor: ColorConst.background,
-        appBar: AppBarComponentWidget(isInfoIconEnabled: false,),
         body: Column(
           children: [
             const SizedBox(
@@ -133,7 +139,7 @@ class _AlertState extends State<Alert> {
                   height: MediaQuery.of(context).size.height * 0.07,
                   width: MediaQuery.of(context).size.width * 0.75,
                   decoration: ShapeDecoration(
-                    color: Color(0xFFFFEDAE),
+                    color: ColorConst.recipename,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                       side: BorderSide(width: 0.50),
@@ -155,7 +161,7 @@ class _AlertState extends State<Alert> {
                         border: InputBorder.none, // 枠線を消す
                         // placeholderみたいなやつ
                         hintText: 'レシピ名',
-                        hintStyle: TextStyle(color: Colors.grey),
+                        hintStyle: TextStyle(color: ColorConst.grey),
                       ),
                       keyboardType: TextInputType.text, // キーボードの形を決める
                     ),
@@ -168,15 +174,7 @@ class _AlertState extends State<Alert> {
               height: 30,
             ),
             _buildRectangleList(),
-            _buildAddButton(),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Container(
-            //     height: MediaQuery.of(context).size.height * 0.3,
-            //     color: Colors.amber,
-            //   ),
-              
-            // ),
+            _buildSendButton(),
           ],
         ),
       ),
@@ -192,12 +190,14 @@ class _AlertState extends State<Alert> {
               '大さじ',
               style: TextStyle(
                 fontSize: 10,
+                height: 3,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            // ),
             Container(
-              width: 50,
-              height: 50,
+              width: MediaQuery.of(context).size.width * 0.1,
+              height: MediaQuery.of(context).size.height * 0.055,
               child: NumberPicker(
                 value: recipeItem.selectedNumber1, // 値を個別に持たせるために各インスタンスから
                 decoration: BoxDecoration(),
@@ -212,21 +212,23 @@ class _AlertState extends State<Alert> {
             ),
           ],
         ),
-        const SizedBox(
-          height: 0,
-        ),
         Row(
           children: [
+            // Container(
+            //   // width: MediaQuery.of(context).size.width * 0.1,
+            //   height: MediaQuery.of(context).size.height * 0.03,
             const Text(
               '小さじ',
               style: TextStyle(
                 fontSize: 10,
+                height: 3,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            // ),
             Container(
-              width: 50,
-              height: 50,
+              width: MediaQuery.of(context).size.width * 0.1,
+              height: MediaQuery.of(context).size.height * 0.055,
               child: NumberPicker(
                 value: recipeItem.selectedNumber2, // 値を個別に持たせるために各インスタンスから
                 minValue: 0,
