@@ -168,9 +168,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                // Icon(
-                //   Icons.arrow_right_outlined,
-                // ),
               ],
             ),
           ),
