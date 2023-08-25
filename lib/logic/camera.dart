@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:path/path.dart';
 
 import '../component/appbar.dart';
@@ -66,31 +67,47 @@ class _CameraState extends State<Camera> {
     if (!_controller.value.isInitialized) {
       return Container();
     }
+    final cameraPreview = CameraPreview(_controller);
     return SafeArea(
       child: Scaffold(
-          // appBar: AppBarComponentWidget(
-          //   isInfoIconEnabled: true,
-          // ),
-          body: CameraPreview(_controller),
-          floatingActionButton: FloatingActionButton(
-            child: GestureDetector(
-              // タップした時
-              onTap: () async {
-                // 写真撮影
-                final image = await _controller.takePicture();
-                // 表示用の画面に遷移
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ImagePreview(imagePath: image.path),
-                    fullscreenDialog: true,
-                  ),
-                );
-              },
-
-              child: const Icon(Icons.add_a_photo),
+        body: Stack(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height * 1.0, // 高さを指定,
+              width: MediaQuery.of(context).size.height * 0.6, // 高さを指定,
+              child: cameraPreview,
             ),
-            onPressed: () {},
-          )),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 20),
+                child: GestureDetector(
+                  onTap: () async {
+                    if (!_controller.value.isTakingPicture) {
+                      // 前の撮影が完了しているかチェック
+                      // 写真撮影
+                      final image = await _controller.takePicture();
+                      // 表示用の画面に遷移
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ImagePreview(imagePath: image.path),
+                          fullscreenDialog: true,
+                        ),
+                      );
+                    }
+                  },
+                  child: FaIcon(
+                    FontAwesomeIcons.circleDot,
+                    color: ColorConst.mainColor,
+                    size: 50.0, // 任意のサイズを指定
+                  ),
+                ),
+              ),
+            ),
+          ],
+          // child: CameraPreview(_controller),
+        ),
+      ),
     );
   }
 }
@@ -105,7 +122,6 @@ class ImagePreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

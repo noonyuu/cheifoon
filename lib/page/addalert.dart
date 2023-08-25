@@ -15,6 +15,8 @@ import '../logic/camera.dart';
 import '../model/rectangle_model.dart';
 import 'home_page.dart';
 
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 class Alert extends StatefulWidget {
   const Alert({Key? key}) : super(key: key);
 
@@ -44,7 +46,7 @@ class _AlertState extends State<Alert> {
     _bottleController = BottleController.bottleLists;
   }
 
-  Widget _buildRectangle(seasoningItem recipeItem) {
+  Widget _buildRectangle(seasoningItem recipeItem, int index) {
     bool isBottleSelected = recipeItem.selectedBottle != null;
 
     return Stack(
@@ -77,6 +79,21 @@ class _AlertState extends State<Alert> {
                   height: MediaQuery.of(context).size.height * 0.13,
                   child: NumPicker(recipeItem),
                 ),
+              Align(
+                alignment: Alignment.center,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _rectangleList.removeAt(index);
+                    });
+                  },
+                  child: FaIcon(
+                    FontAwesomeIcons.trash,
+                    color: ColorConst.red,
+                    size: 20.0, // 任意のサイズを指定
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -87,26 +104,17 @@ class _AlertState extends State<Alert> {
 // 調味料を表示していくためのリスト
   Widget _buildRectangleList() {
     return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
-          children: _rectangleList.map((recipeItem) {
-            return FutureBuilder<void>(
-              future: _initializeState(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  // TODO:printの削除
-                  print('あsnapshot.connectionState: ${recipeItem.selectedBottle?.bottleTitle}');
-                  print('いsnapshot.connectionState: ${recipeItem.selectedNumber1}');
-                  print('うsnapshot.connectionState: ${recipeItem.selectedNumber2}');
-                  print('えsnapshot.connectionState: ${imagePaths.getFilePath()}');
-                  print('おsnapshot.connectionState: ${_recipeName}');
-                  return _buildRectangle(recipeItem);
-                } else {
-                  return CircularProgressIndicator(); // 初期化中のローディング表示
-                }
-              },
-            );
-          }).toList(),
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          child: Column(
+            // 各調味料の情報を保持してあるリストを展開
+            // children: _rectangleList.map((recipeItem) {
+            //   return _buildRectangle(recipeItem);
+            // }).toList(),
+            children: _rectangleList.asMap().entries.map((entry) {
+              return _buildRectangle(entry.value, entry.key);
+            }).toList(),
+          ),
         ),
       ),
     );
@@ -115,6 +123,7 @@ class _AlertState extends State<Alert> {
   Widget _buildbackButton() {
     return TextButton(
       onPressed: () {
+        imagePaths.setFilePath('');
         Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
       },
       child: Container(
@@ -198,21 +207,25 @@ class _AlertState extends State<Alert> {
   bool areAllIngredientsSelected() {
     return _rectangleList.every((item) => item.selectedBottle != null);
   }
+
   //画像が設定されてなかったら決定ボタン押せない
   bool imageSelected() {
-    return  imagePaths.getFilePath().isNotEmpty ? true : false;
+    return imagePaths.getFilePath().isNotEmpty ? true : false;
   }
 
 // 決定ボタン押されたとき
   Widget _buildDecisionButton() {
     return TextButton(
       onPressed: areAllIngredientsSelected() && imageSelected()
-          ? () {
-              _rectangleList.forEach((item) {
-                recipeInsert(_recipeName, item.selectedBottle?.bottleId, item.selectedNumber1, item.selectedNumber1, imagePaths.getFilePath());
+          ? () async {
+              int menuId = await menuInsert(_recipeName, imagePaths.getFilePath());
+              _rectangleList.forEach((item) async {
+                recipeInsert(menuId, item.selectedBottle?.bottleId, item.selectedNumber1, item.selectedNumber1);
               });
               imagePaths.setFilePath('');
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+              Navigator.pop(context);
+              // 更新かけるとおかしくなる
+              // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
             }
           : null,
       child: Container(
@@ -364,17 +377,20 @@ class _AlertState extends State<Alert> {
               '大さじ',
               style: TextStyle(
                 fontSize: 10,
+                height: 3,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            // ),
             Container(
-              width: 50,
-              height: 50,
+              width: MediaQuery.of(context).size.width * 0.1,
+              height: MediaQuery.of(context).size.height * 0.055,
               child: NumberPicker(
                 value: recipeItem.selectedNumber1, // 値を個別に持たせるために各インスタンスから
                 decoration: BoxDecoration(),
                 minValue: 0,
-                maxValue: 6,
+                maxValue: 5,
+                infiniteLoop: true, // 0 ~ 5しか表示されない
                 onChanged: (value) {
                   setState(() {
                     recipeItem.selectedNumber1 = value;
@@ -384,25 +400,24 @@ class _AlertState extends State<Alert> {
             ),
           ],
         ),
-        const SizedBox(
-          height: 0,
-        ),
         Row(
           children: [
             const Text(
               '小さじ',
               style: TextStyle(
                 fontSize: 10,
+                height: 3,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Container(
-              width: 50,
-              height: 50,
+              width: MediaQuery.of(context).size.width * 0.1,
+              height: MediaQuery.of(context).size.height * 0.055,
               child: NumberPicker(
                 value: recipeItem.selectedNumber2, // 値を個別に持たせるために各インスタンスから
                 minValue: 0,
-                maxValue: 3,
+                maxValue: 2,
+                infiniteLoop: true, // 0 ~ 2しか表示されない
                 onChanged: (value) {
                   setState(() {
                     recipeItem.selectedNumber2 = value;
@@ -433,17 +448,26 @@ class _AlertState extends State<Alert> {
     }
   }
 
-  void recipeInsert(menuName, seasoningId, tableSpoon, teaSpoon, imagePath) async {
+  Future<int> menuInsert(menuName, imagePath) async {
     Uint8List? uint8List = await readCacheFileToUint8List(imagePath);
     int? lastMenuId;
-      Map<String, dynamic> menuTable = {DatabaseHelper.menuName: menuName, DatabaseHelper.menuImage: uint8List};
-      lastMenuId = await dbHelper.insertMenu(menuTable);
-    // menuテ
-    if (lastMenuId != null) {
-      Map<String, dynamic> recipeTable = {DatabaseHelper.menuId: lastMenuId, DatabaseHelper.seasoningId: seasoningId, DatabaseHelper.tableSpoon: tableSpoon, DatabaseHelper.teaSpoon: teaSpoon};
+    Map<String, dynamic> menuTable = {DatabaseHelper.menuName: menuName, DatabaseHelper.menuImage: uint8List};
+    return lastMenuId = await dbHelper.insertMenu(menuTable);
+  }
 
-      await dbHelper.insertRecipe(recipeTable);
-    }
+  void recipeInsert(menuId, seasoningId, tableSpoon, teaSpoon) async {
+    print(menuId);
+    int? lastMenuId;
+    Map<String, dynamic> recipeTable = {};
+    Map<String, dynamic> menuTable = {};
+
+    recipeTable = {
+      DatabaseHelper.menuId: menuId,
+      DatabaseHelper.seasoningId: seasoningId,
+      DatabaseHelper.tableSpoon: tableSpoon != 0 ? tableSpoon - 1 : 0,
+      DatabaseHelper.teaSpoon: teaSpoon != 0 ? teaSpoon - 1 : 0
+    };
+    await dbHelper.insertRecipe(recipeTable);
   }
 }
 
