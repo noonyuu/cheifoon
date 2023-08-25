@@ -1,247 +1,304 @@
 import 'package:flutter/material.dart';
-import 'package:numberpicker/numberpicker.dart';
 import 'package:sazikagen/component/appbar.dart';
 import 'package:sazikagen/constant/color_constant.dart';
-import '../../controller/bottle_controller.dart';
-import 'package:sazikagen/model/bottle_model.dart';
-import '../model/rectangle_model.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sazikagen/logic/connection.dart';
+import 'package:sazikagen/model/recipe_model.dart';
 
-// import '../constant/String_constant.dart';
+import '../db/database_helper.dart';
+import '../logic/connection.dart';
+import 'home_page.dart';
 
 class Send extends StatefulWidget {
-  const Send({Key? key}) : super(key: key);
+  const Send({Key? key, required this.recipe}) : super(key: key);
 
   @override
   State<Send> createState() => _SendState();
+
+  final RecipeModel recipe;
 }
 
 class _SendState extends State<Send> {
-  List<seasoningItem> _rectangleList = []; // 四角形を追加していくためのリスト
-  List<BottleModel> _bottleController = []; // ドロップダウンリストに表示するためのリスト
-  String _recipeName = ''; // レシピ名を入れるための変数
+  final dbHelper = DatabaseHelper.instance;
+  // List<String> seasoningList = ['醤油', 'ウスターソース']; // 調味料のリスト
+  List<Map<String, dynamic>> queryRecipe = [];
+  List<Map<String, dynamic>> querySeasoning = [];
+
+  late RecipeModel _recipe; // レシピをここに保存
+
+  bool isLodging = false;
+
+  List<String> seasoningName = [];
+  List<String> tableSpoon = [];
+  List<String> teaSpoon = [];
 
   @override
   void initState() {
+    _recipe = widget.recipe;
     super.initState();
+    // _query();
     _initializeState();
   }
 
   Future<void> _initializeState() async {
-    // 登録済みの調味料を取得
-    _bottleController = BottleController.bottleLists;
-  }
-
-  Widget _buildRectangle(seasoningItem recipeItem) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height * 0.15,
-            decoration: ShapeDecoration(
-              color: ColorConst.recipename,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                side: BorderSide(width: 0.50),
-              ),
-            ),
-          ),
-        ),
-        Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          height: MediaQuery.of(context).size.height * 0.15,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _Dropdown(recipeItem), // ドロップダウンリスト(調味料)
-              Container(
-                width: MediaQuery.of(context).size.width * 0.25,
-                height: MediaQuery.of(context).size.height * 0.13,
-                child: NumPicker(recipeItem),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-// 調味料を表示していくためのリスト
-  Widget _buildRectangleList() {
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
-          // 各調味料の情報を保持してあるリストを展開
-          children: _rectangleList.map((recipeItem) {
-            return _buildRectangle(recipeItem);
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
-// 送信ボタンが押された時
-  Widget _buildSendButton() {
-    return IconButton(
-      onPressed: () {
-        setState(() {
-          // リストに書く調味料の情報を保持しておくインスタンスを追加
-          _rectangleList.add(seasoningItem());
-        });
-      },
-      icon: FaIcon(
-        FontAwesomeIcons.paperPlane,
-        color: ColorConst.black,
-      ),
-    );
-  }
-
-  Widget _Dropdown(seasoningItem recipeItem) {
-    return DropdownButton<BottleModel>(
-      value: recipeItem.selectedBottle,
-      onChanged: (newValue) {
-        setState(() {
-          recipeItem.selectedBottle = newValue;
-        });
-      },
-      items: _bottleController.map((bottle) {
-        return DropdownMenuItem<BottleModel>(
-          value: bottle,
-          child: Text(bottle.bottleTitle),
-        );
-      }).toList(),
-    );
+    recipeTable().then((_) {
+      print('$queryRecipeを照会しました。');
+      isLodging = true;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBarComponentWidget(
-          isInfoIconEnabled: false,
-        ),
-        // 全体画面
-        backgroundColor: ColorConst.background,
-        body: Column(
-          children: [
-            const SizedBox(
-              // 検索バーの上に隙間入れるためのやつ
-              height: 30,
-            ),
-            Stack(
-              alignment: Alignment.center, // 検索バー背景を真ん中に持ってくる
-              children: [
-                Container(
-                  // 検索バーの背景の四角形
-                  height: MediaQuery.of(context).size.height * 0.07,
-                  width: MediaQuery.of(context).size.width * 0.75,
-                  decoration: ShapeDecoration(
-                    color: ColorConst.recipename,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      side: BorderSide(width: 0.50),
-                    ),
-                  ),
-                ),
-                Center(
-                  // 検索バーを真ん中に持ってくる
-                  child: Container(
-                    // 検索バー
-                    child: TextField(
-                      onChanged: (value) {
-                        // 入力された値を取得
-                        _recipeName = value;
-                      },
-                      // 入力できる形にする
-                      textAlign: TextAlign.center, // テキストを真ん中にする
-                      decoration: InputDecoration(
-                        border: InputBorder.none, // 枠線を消す
-                        // placeholderみたいなやつ
-                        hintText: 'レシピ名',
-                        hintStyle: TextStyle(color: ColorConst.grey),
+    if (!isLodging) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      return SafeArea(
+        child: Scaffold(
+          appBar: AppBarComponentWidget(
+            isInfoIconEnabled: false,
+          ),
+          // 全体画面
+          backgroundColor: ColorConst.background,
+          body: Column(
+            children: [
+              const SizedBox(
+                // 検索バーの上に隙間入れるためのやつ
+                height: 30,
+              ),
+              Stack(
+                alignment: Alignment.center, // 検索バー背景を真ん中に持ってくる
+                children: [
+                  Container(
+                    // 検索バーの背景の四角形
+                    height: MediaQuery.of(context).size.height * 0.07,
+                    width: MediaQuery.of(context).size.width * 0.75,
+                    decoration: ShapeDecoration(
+                      color: ColorConst.recipename,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        side: BorderSide(width: 0.50),
                       ),
-                      keyboardType: TextInputType.text, // キーボードの形を決める
                     ),
                   ),
-                ),
-              ],
+                  Center(
+                    child: Text(
+                      _recipe.title,
+                      // queryRecipe.length.toString(),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                // 検索バーと調味料の間に隙間入れるために設置
+                height: 20,
+              ),
+              Column(
+                children: [
+                  const SizedBox(height: 30), // 上部のスペース
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.6, // 画面の一部に制約を設定
+                    child: ListView(
+                      children: queryRecipe.map((dataKey) {
+                        // final data = queryRecipe[dataKey];
+                        return Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                height: MediaQuery.of(context).size.height * 0.15,
+                                decoration: ShapeDecoration(
+                                  color: ColorConst.recipename,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    side: BorderSide(width: 0.50),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Column(
+                                children: [
+                                  const SizedBox(width: 230),
+                                  FutureBuilder<List<Map<String, dynamic>>>(
+                                    future: dbHelper.querySeasoningId(dataKey['seasoning_id'].toString()),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return CircularProgressIndicator();
+                                      } else {
+                                        seasoningName.add(snapshot.data![0]['seasoning_name']);
+                                        tableSpoon.add(dataKey['table_spoon'].toString());
+                                        teaSpoon.add(dataKey['tea_spoon'].toString());
+                                        return Text(snapshot.data![0]['seasoning_name']);
+                                      }
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Column(
+                                children: [
+                                  Text('大さじ    ${dataKey['table_spoon']}'),
+                                  const SizedBox(height: 25),
+                                  Text('小さじ    ${dataKey['tea_spoon']}'),
+                                  const SizedBox(width: 260),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  _buildBackButton(),
+                  _buildSendButton(),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  // void _query() async {
+  //   final allRows = await dbHelper.queryRecipe();
+  //   print('全てのデータを照会しました。');
+  //   setState(() {
+  //     queryRecipe = allRows;
+  //   });
+  // }
+
+  recipeTable() async {
+    // Map<String, dynamic> row = {DatabaseHelper.menuId: _recipe.recipeId};
+    // final selectedRows = await dbHelper.getRecordById(_recipe.recipeId);
+    final recipeInfo = await dbHelper.getRecipeInfo(_recipe.recipeId);
+    setState(() {
+      queryRecipe = recipeInfo;
+    });
+  }
+
+  seasoningTable(String id) async {
+    final seasoningInfo = await dbHelper.querySeasoningId(id);
+    if (seasoningInfo.isNotEmpty) {
+      setState(() {
+        querySeasoning = seasoningInfo.first['seasoning_name'];
+      });
+    }
+  }
+
+  // 戻るボタン
+  Widget _buildBackButton() {
+    return TextButton(
+      onPressed: () {
+        Navigator.pop(context);
+        // 更新かけるとおかしくなる
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.15,
+        height: MediaQuery.of(context).size.height * 0.04,
+        decoration: ShapeDecoration(
+          color: ColorConst.recipename,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5.0),
+            side: BorderSide(width: 0.50),
+          ),
+        ),
+        child: Center(
+          child: Text(
+            '戻る',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 12,
             ),
-            const SizedBox(
-              // 検索バーと調味料の間に隙間入れるために設置
-              height: 30,
-            ),
-            _buildRectangleList(),
-            _buildSendButton(),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget NumPicker(seasoningItem recipeItem) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            const Text(
-              '大さじ',
-              style: TextStyle(
-                fontSize: 10,
-                height: 3,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            // ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.1,
-              height: MediaQuery.of(context).size.height * 0.055,
-              child: NumberPicker(
-                value: recipeItem.selectedNumber1, // 値を個別に持たせるために各インスタンスから
-                decoration: BoxDecoration(),
-                minValue: 0,
-                maxValue: 6,
-                onChanged: (value) {
-                  setState(() {
-                    recipeItem.selectedNumber1 = value;
-                  });
-                },
-              ),
-            ),
-          ],
+// 決定ボタン
+  Widget _buildSendButton() {
+    return TextButton(
+      onPressed: () {
+        // Navigator.push(
+        //     context, MaterialPageRoute(builder: (context) => HomePage()));
+        connection.fetchDataFromRaspberryPi(_recipe.title, seasoningName, tableSpoon, teaSpoon);
+        showDialog<void>(
+            barrierDismissible: false,
+            context: context,
+            builder: (_) {
+              return SendAlertDialog();
+            });
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.15,
+        height: MediaQuery.of(context).size.height * 0.04,
+        decoration: ShapeDecoration(
+          color: ColorConst.recipename,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5.0),
+            side: BorderSide(width: 0.50),
+          ),
         ),
-        Row(
-          children: [
-            // Container(
-            //   // width: MediaQuery.of(context).size.width * 0.1,
-            //   height: MediaQuery.of(context).size.height * 0.03,
-            const Text(
-              '小さじ',
-              style: TextStyle(
-                fontSize: 10,
-                height: 3,
-                fontWeight: FontWeight.bold,
-              ),
+        child: Center(
+          child: Text(
+            '送信',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 12,
             ),
-            // ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.1,
-              height: MediaQuery.of(context).size.height * 0.055,
-              child: NumberPicker(
-                value: recipeItem.selectedNumber2, // 値を個別に持たせるために各インスタンスから
-                minValue: 0,
-                maxValue: 3,
-                onChanged: (value) {
-                  setState(() {
-                    recipeItem.selectedNumber2 = value;
-                  });
-                },
-              ),
-            ),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class SendAlertDialog extends StatelessWidget {
+  const SendAlertDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: ColorConst.background,
+      title: Center(child: Text('送信しました！')),
+      content: Text(
+        '機械の画面指示に\n従って進めてください!',
+        textAlign: TextAlign.center, // テキストを中央揃えにする
+      ),
+      shape: RoundedRectangleBorder(
+        // 枠線を追加
+        borderRadius: BorderRadius.circular(10.0), // 角丸の半径を設定
+        side: BorderSide(color: ColorConst.mainColor, width: 5.0), // 枠線の設定
+      ),
+      actions: <Widget>[
+        GestureDetector(
+          child: Text('はい'),
+          onTap: () {
+            Navigator.of(context).pop();
+            Navigator.pop(context);
+            // 更新かけるをおかしくなる
+            // Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+          },
+        )
       ],
     );
   }
