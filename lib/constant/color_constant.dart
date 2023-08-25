@@ -10,4 +10,6 @@ class ColorConst {
   static const Color blue = Colors.blue;
   static const Color grey = Colors.grey;
   static const Color transparent = Colors.transparent;
+  static const Color paleYellow = Color.fromARGB(255, 255, 248, 183);
+  static const Color red = Colors.red;
 }
