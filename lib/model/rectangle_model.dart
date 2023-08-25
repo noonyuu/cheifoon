@@ -5,5 +5,19 @@ class seasoningItem {
   int selectedNumber1 = 1;
   int selectedNumber2 = 1;
 
-  seasoningItem({this.selectedBottle, this.selectedNumber1 = 1, this.selectedNumber2 = 1});
+  seasoningItem(
+      {this.selectedBottle,
+      this.selectedNumber1 = 1,
+      this.selectedNumber2 = 1});
+}
+
+class ItemAdmin {
+  BottleAdminModel? selectedBottle;
+  int selectedNumber1 = 1;
+  int selectedNumber2 = 1;
+
+  ItemAdmin(
+      {this.selectedBottle,
+      this.selectedNumber1 = 1,
+      this.selectedNumber2 = 1});
 }

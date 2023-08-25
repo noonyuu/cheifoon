@@ -32,18 +32,16 @@ class BottleController {
       ));
     }
   }
-
-  map(DropdownMenuItem<BottleModel> Function(dynamic bottle) param0) {}
 }
 
 class BottleAdminController {
   static final dbHelper = DatabaseHelper.instance;
   static List<Map<String, dynamic>> _bottleTable = [];
-  static List<BottleModel> _bottle = [];
+  static List<BottleAdminModel> _bottle = [];
 
-  static List<BottleModel> get bottleLists => _bottle;
+  static List<BottleAdminModel> get bottleadminLists => _bottle;
 
-  static Future<List<BottleModel>> bottleList() async {
+  static Future<List<BottleAdminModel>> bottleList() async {
     await _queryBottleTable();
     await _initializeBottle();
     return _bottle;
@@ -58,10 +56,12 @@ class BottleAdminController {
   // 調味料の初期化
   static Future<void> _initializeBottle() async {
     for (var row in _bottleTable) {
-      _bottle.add(BottleModel(
+      _bottle.add(BottleAdminModel(
         bottleId: row['ASeasoningId'],
         bottleTitle: row['ASeasoningName'],
       ));
     }
   }
+
+  map(DropdownMenuItem<BottleAdminModel> Function(dynamic bottle) param0) {}
 }

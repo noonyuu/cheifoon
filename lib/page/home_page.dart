@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sazikagen/constant/color_constant.dart';
-import '../constant/String_constant.dart';
 import 'package:sazikagen/model/bottle_model.dart';
 import '../db/database_helper.dart';
 import '../model/recipe_model.dart';
@@ -22,7 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<RecipeModel> _recipepost = [];
   List<BottleModel> _bottlepost = [];
-  List<BottleModel> _bottleadmin = [];
+  List<BottleAdminModel> _bottleadmin = [];
 
   List<Map<String, dynamic>> _queryResult = [];
   final dbHelper = DatabaseHelper.instance;
@@ -39,7 +38,7 @@ class _HomePageState extends State<HomePage> {
     // TODO: コメントアウト４行はずして読み込めばSQLiteにデータが入るけど、もどしわすれないように(test配置なので毎回読み込むたびにinsertされます)
     // _insert();
     // _inserta();
-    _insertb();
+    // _insertb();
     // _insertc();
     _query();
 
@@ -58,7 +57,7 @@ class _HomePageState extends State<HomePage> {
         isBottleLoding = false;
       });
     }); // BottleControllerからデータを取得
-    await BottleController.bottleList().then((bottleList) {
+    await BottleAdminController.bottleList().then((bottleList) {
       setState(() {
         _bottleadmin = bottleList;
         // isBottleLoding = false;
@@ -116,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                 height: 30,
               ),
               //調味料表示
-              _Seasoning(seasoningItem()),
+              _Seasoning(ItemAdmin(), seasoningItem()),
               const SizedBox(
                 height: 30,
               ),
@@ -142,7 +141,7 @@ class _HomePageState extends State<HomePage> {
 
 //調味料ウィジェット
 
-  Widget _Seasoning(seasoningItem recipeItem) {
+  Widget _Seasoning(ItemAdmin itemAdmin, seasoningItem recipeItem) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.9,
       height: MediaQuery.of(context).size.height * 0.2,
@@ -167,7 +166,7 @@ class _HomePageState extends State<HomePage> {
                       Icons.add_circle_outline,
                     ),
                     onPressed: () {
-                      _Alertdrpodown(recipeItem);
+                      _Alertdrpodown(itemAdmin);
                     }),
                 SizedBox(
                   width: 10,
@@ -208,8 +207,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  List<seasoningItem> _rectangleList = [];
-  List<BottleModel> _bottleController = [];
+  // List<seasoningItem> _rectangleList = [];
   int index = 0;
 
   void State() {
@@ -217,12 +215,16 @@ class _HomePageState extends State<HomePage> {
     _initializeState();
   }
 
-  Future<void> _State() async {
-    // 登録済みの調味料を取得
-    _bottleController = BottleController.bottleLists;
-  }
+  // Future<void> _State() async {
+  //   // 登録済みの調味料を取得
+  //   List<BottleModel> _bottleController = [];
 
-  _Alertdrpodown(seasoningItem recipeItem) {
+  //   _bottleController = BottleController.bottleLists;
+  // }
+
+  List<Map<String, dynamic>> queryList = [];
+
+  _Alertdrpodown(ItemAdmin itemAdmin) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -244,16 +246,16 @@ class _HomePageState extends State<HomePage> {
               child: StatefulBuilder(
                   builder: (BuildContext context, StateSetter setState) =>
                       Center(
-                          child: DropdownButton<BottleModel>(
-                        underline: Container(),
-                        value: recipeItem.selectedBottle,
+                          child: DropdownButton<BottleAdminModel>(
+                        underline: Container(), //下線なくす
+                        value: itemAdmin.selectedBottle,
                         onChanged: (newValue) {
                           setState(() {
-                            recipeItem.selectedBottle = newValue;
+                            itemAdmin.selectedBottle = newValue;
                           });
                         },
                         items: _bottleadmin.map((bottle) {
-                          return DropdownMenuItem<BottleModel>(
+                          return DropdownMenuItem<BottleAdminModel>(
                             value: bottle,
                             child: Text(bottle.bottleTitle),
                           );
@@ -262,9 +264,22 @@ class _HomePageState extends State<HomePage> {
           actions: [
             IconButton(
               onPressed: () {
-                setState(() {
-                  // TODO : プログラム書く
-                });
+                if (itemAdmin.selectedBottle != null) {
+                  BottleAdminModel selectedBottle = itemAdmin.selectedBottle!;
+
+                  BottleModel newBottle = BottleModel(
+                    bottleId: selectedBottle.bottleId,
+                    bottleTitle: selectedBottle.bottleTitle,
+                  );
+
+                  setState(() {
+                    _bottlepost.add(newBottle);
+                  });
+                  print('追加しました');
+
+                  // ダイアログを閉じる
+                  Navigator.pop(context);
+                }
               },
               icon: Icon(
                 Icons.add_circle,
@@ -297,7 +312,6 @@ class _HomePageState extends State<HomePage> {
     print('登録しました。id: $id');
   }
 
-//
   void _insertb() async {
     Map<String, dynamic> row = {
       DatabaseHelper.ASeasoningName: 'みりん',
