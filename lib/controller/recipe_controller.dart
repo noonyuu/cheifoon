@@ -22,14 +22,13 @@ class RecipeController {
     _menuTable.addAll(allRows);
   }
 
-  // レシピの初期化
   static Future<void> _initializeRecipe() async {
     for (var row in _menuTable) {
       Uint8List imageBytes = row['menu_image'];
       _recipe.add(RecipeModel(
         recipeId: row['menu_id'],
         title: row['menu_name'],
-        imagePath: imageBytes, // バイト配列を画像に変換
+        imagePath: imageBytes, // Assign the actual image bytes
       ));
     }
   }
