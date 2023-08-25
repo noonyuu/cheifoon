@@ -193,17 +193,6 @@ Future<Database> _initDatabase() async {
   }
 
   // menuTable 引数のidを条件にレコードを取得
-  // Future<List<Map<String, dynamic>>>  getRecordById(row) async {
-  //   Database? db = await instance.database;
-  //   List<Map<String, dynamic>> results = await db!.rawQuery('''
-  //   SELECT * FROM $menuTable WHERE $menuId = $row
-  // ''');
-  //   if (results.isNotEmpty) {
-  //     return results;
-  //   }
-  //   return [];
-  // }
-  // menuTable 引数のidを条件にレコードを取得
   Future<List<Map<String, dynamic>>> getRecipeInfo(row) async {
     Database? db = await instance.database;
     List<Map<String, dynamic>> results = await db!.rawQuery('''
