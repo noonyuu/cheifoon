@@ -6,6 +6,7 @@ import '../page/addalert.dart';
 
 class AppBarComponentWidget extends StatefulWidget implements PreferredSizeWidget {
   final bool isInfoIconEnabled;
+  static String filePath = '';
 
   const AppBarComponentWidget({
     Key? key,
@@ -35,21 +36,6 @@ class _AppBarComponentWidgetState extends State<AppBarComponentWidget> {
               child: SvgPicture.asset(
                 'assets/images/appbar.svg',
                 fit: BoxFit.cover,
-              ),
-            ),
-            Positioned(
-              top: 15.0,
-              right: 16.0,
-              child: IconButton(
-                icon: Icon(
-                  Icons.contact_support_outlined,
-                  color: ColorConst.black,
-                ),
-                onPressed: widget.isInfoIconEnabled
-                    ? () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => Alert()));
-                      }
-                    : null,
               ),
             ),
           ],

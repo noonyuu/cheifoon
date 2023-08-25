@@ -1,9 +1,14 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:sazikagen/page/home_page.dart';
 
-void main() {
-  //   debugPaintSizeEnabled = true; // ウィジェットの境界を表示
+import 'logic/connection.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final cameras = await availableCameras();
+  // debugPaintSizeEnabled = true; // ウィジェットの境界を表示
   // debugPaintLayerBordersEnabled = true; // レイヤーの境界を表示
   runApp(const MainApp());
 }
@@ -20,6 +25,7 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      // home: MyHomePage(),
       home: HomePage(),
     );
   }
