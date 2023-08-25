@@ -19,7 +19,8 @@ class CardComponent extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Send()));
+        // print('${_recipe}');
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Send(recipe: _recipe)));
       },
       child: InkWell(
         child: Card(
@@ -49,7 +50,7 @@ class CardComponent extends StatelessWidget {
                     ),
                     child: FittedBox(
                       child: Image.memory(_recipe.imagePath),
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                     ),
                     // child: Image.asset('assets/images/appBar.png'),
                   ),
