@@ -1,16 +1,11 @@
-# sazikagen
+# さじ加減
 
-A new Flutter project.
+『さじ加減』は料理中に調味料を測る工程を無くして料理をもっと簡単にするためのお助けアイテムです。スマホと連動し、調理中に操作なく利用できます。また、タッチパネルで直に操作することもでき味付けの微調整も可能です。
 
-## Getting Started
+## 一言
 
-This project is a starting point for a Flutter application.
+時間がなくてクソコードになってます
 
-A few resources to get you started if this is your first Flutter project:
+### 　リンク
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [プレゼンテーション](https://www.canva.com/design/DAFsMo8NZEQ/H6pif97hRnCzPIYyyxmzRg/editb)

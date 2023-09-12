@@ -11,6 +11,8 @@ class RecipeController {
   static List<RecipeModel> _recipe = [];
 
   static Future<List<RecipeModel>> menuList() async {
+    _menuTable.clear();
+    _recipe.clear();
     await _queryMenuTable();
     await _initializeRecipe();
     return _recipe;

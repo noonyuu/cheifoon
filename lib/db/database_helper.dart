@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
@@ -46,7 +48,7 @@ class DatabaseHelper {
   }
 
   // データベース接続
-Future<Database> _initDatabase() async {
+  Future<Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
 
@@ -65,7 +67,6 @@ Future<Database> _initDatabase() async {
     return db;
   }
 
-
   // テーブル作成メソッド
   Future _onCreate(Database db, int version) async {
     // 準備され得ている調味料
@@ -76,6 +77,11 @@ Future<Database> _initDatabase() async {
         $ASeasoningName TEXT NOT NULL,
         $AteaSecond REAl NOT NULL
       )''');
+      // admin追加
+      await db.execute('''INSERT INTO $adminSeasoning (ASeasoningName, Atea_second) VALUES('醤油', 1.2)''');
+      await db.execute('''INSERT INTO $adminSeasoning (ASeasoningName, Atea_second) VALUES('みりん', 1.2)''');
+      await db.execute('''INSERT INTO $adminSeasoning (ASeasoningName, Atea_second) VALUES('さけ', 1.2)''');
+      await db.execute('''INSERT INTO $adminSeasoning (ASeasoningName, Atea_second) VALUES('ウスターソース', 1.2)''');
       // 調味料テーブル
       await db.execute('''CREATE TABLE $seasoningTable (
         $seasoningId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -100,6 +106,15 @@ Future<Database> _initDatabase() async {
         FOREIGN KEY ($menuId) REFERENCES $menuTable ($menuId),
         FOREIGN KEY ($seasoningId) REFERENCES $seasoningTable ($seasoningId)
       )''');
+      // TODO: テストデータ
+      Uint8List curry = (await rootBundle.load('assets/images/recipe/sample/curry.png')).buffer.asUint8List();
+      Uint8List OmeletteRice = (await rootBundle.load('assets/images/recipe/sample/OmeletteRice.png')).buffer.asUint8List();
+      await db.rawInsert('''INSERT INTO $menuTable ($menuName, $menuImage) VALUES (?, ?)''', ['カレー', curry]);
+      await db.rawInsert('''INSERT INTO $menuTable ($menuName, $menuImage) VALUES (?, ?)''', ['オムライス', OmeletteRice]);
+
+      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES (?,?,?,?)''',[1,1,0,1]);
+      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES (?,?,?,?)''',[1,4,1,0]);// カレー,醤油,0,1,ウスターソース,1,1
+      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES(?,?,?,?)''',[2,4,0,2]);
     } catch (e) {
       print('エラー：$e');
     }
@@ -135,7 +150,8 @@ Future<Database> _initDatabase() async {
     Database? db = await instance.database;
     return await db!.query(menuTable);
   }
-    Future<List<Map<String, dynamic>>> queryAdminSeasoningTable() async {
+
+  Future<List<Map<String, dynamic>>> queryAdminSeasoningTable() async {
     Database? db = await instance.database;
     return await db!.query(adminSeasoning);
   }
@@ -197,6 +213,18 @@ Future<Database> _initDatabase() async {
     Database? db = await instance.database;
     List<Map<String, dynamic>> results = await db!.rawQuery('''
     SELECT * FROM $recipeTable WHERE $menuId = $row
+  ''');
+    if (results.isNotEmpty) {
+      return results;
+    }
+    return [];
+  }
+
+  // seasoningですでに追加されてるか確認
+  Future<List<Map<String, dynamic>>> getSeasoningInfo() async {
+    Database? db = await instance.database;
+    List<Map<String, dynamic>> results = await db!.rawQuery('''
+    SELECT AseasoningId FROM $adminSeasoning WHERE AseasoningId in (SELECT $seasoningId FROM $seasoningTable)
   ''');
     if (results.isNotEmpty) {
       return results;
