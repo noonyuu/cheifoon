@@ -41,27 +41,28 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _initializeState() async {
+    setState(() {
+      _recipepost.clear();
+      isMenuLoding = true;
+      _bottlepost.clear();
+      isBottleLoding = true;
+      _bottleadmin.clear();
+    });
     await RecipeController.menuList().then((menuList) {
+    print(menuList);
       setState(() {
-        _recipepost.clear();
-        isMenuLoding = true;
-        setState(() {});
         _recipepost = menuList;
         isMenuLoding = false;
       });
     }); // RecipeControllerからデータを取得
     await BottleController.bottleList().then((bottleList) {
       setState(() {
-        _bottlepost.clear();
-        isBottleLoding = true;
-        setState(() {});
         _bottlepost = bottleList;
         isBottleLoding = false;
       });
     }); // BottleControllerからデータを取得
     await BottleAdminController.bottleList().then((bottleList) {
       setState(() {
-        _bottleadmin.clear();
         _bottleadmin = bottleList;
         // isBottleLoding = false;
       });
@@ -88,7 +89,7 @@ class _HomePageState extends State<HomePage> {
             body: RefreshIndicator(
               onRefresh: () async {
                 // 新しいデータを取得する処理
-                initState();
+                _initializeState();
               },
               child: Column(
                 children: [
@@ -120,28 +121,21 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            floatingActionButton: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FloatingActionButton(
-                  heroTag: "btn1",
-                  backgroundColor: ColorConst.mainColor,
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => Alert()));
-                  },
-                  child: Icon(Icons.add),
-                ),
-                SizedBox(height: 16), // ボタン間にスペースを空けるための SizedBox
-                FloatingActionButton(
-                  heroTag: "btn2",
-                  backgroundColor: ColorConst.mainColor,
-                  onPressed: () {
-                    _insertb(); //a_醤油
-                    // _insertc(); //醤油
-                  },
-                  child: Icon(Icons.add),
-                ),
-              ],
+            floatingActionButton: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  FloatingActionButton(
+                    heroTag: "btn1",
+                    backgroundColor: ColorConst.mainColor,
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Alert()));
+                    },
+                    child: Icon(Icons.add),
+                  ),// ボタン間にスペースを空けるための SizedBox
+                ],
+              ),
             )),
       );
     }
@@ -265,18 +259,17 @@ class _HomePageState extends State<HomePage> {
                   setState(() {
                     int id = itemAdmin.selectedBottle!.bottleId;
                     String name = itemAdmin.selectedBottle!.bottleTitle;
-                    double tea = 1.2;
                     // TODO:ゴリ押しさん
+                    double tea = 1.2;
                     // double tea = itemAdmin.selectedBottle!.teaSecond;
 
-                    _insertc(id,name,tea);
+                    _insertSeasoning(id, name, tea);
                     _bottlepost.add(newBottle);
-                    print(itemAdmin.selectedBottle!.bottleTitle);
                   });
                   print('追加しました');
 
                   // ダイアログを閉じる
-                  Navigator.pop(context);
+                  Navigator.pop(context,true);
                 }
               },
               icon: Icon(
@@ -294,15 +287,8 @@ class _HomePageState extends State<HomePage> {
 // test data
   void _insert() async {
     Uint8List imageBytes = (await rootBundle.load('assets/images/recipe/sample/curry.png')).buffer.asUint8List();
-    print(Uint8List);
     Map<String, dynamic> row = {DatabaseHelper.menuName: 'カレー', DatabaseHelper.menuImage: imageBytes};
     final id = await dbHelper.insert(row);
-    print('登録しました。id: $id');
-  }
-
-  void _inserta() async {
-    Map<String, dynamic> row = {DatabaseHelper.menuName: 'ハンバーグ', DatabaseHelper.menuImage: 'recipe2.jpg'};
-    final id = await dbHelper.inserta(row);
     print('登録しました。id: $id');
   }
 
@@ -312,7 +298,7 @@ class _HomePageState extends State<HomePage> {
     print('登録しました。id: $id');
   }
 
-  void _insertc(int seasoningId, String title , double tea) async {
+  void _insertSeasoning(int seasoningId, String title, double tea) async {
     Map<String, dynamic> row = {DatabaseHelper.seasoningId: seasoningId, DatabaseHelper.seasoningName: title, DatabaseHelper.teaSecond: tea};
     final id = await dbHelper.insertc(row);
     print('登録しました。id: $id');

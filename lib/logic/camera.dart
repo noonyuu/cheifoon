@@ -2,28 +2,28 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:path/path.dart';
 
-import '../component/appbar.dart';
+
 import '../constant/color_constant.dart';
-import '../page/addalert.dart';
 
-class CameraApp extends StatelessWidget {
-  const CameraApp({
-    Key? key,
-    required this.camera,
-  }) : super(key: key);
 
-  final CameraDescription camera;
+// class CameraApp extends StatelessWidget {
+//   const CameraApp({
+//     Key? key,
+//     required this.camera,
+//   }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Camera(camera: camera),
-    );
-  }
-}
+//   final CameraDescription camera;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: Camera(camera: camera),
+//     );
+//   }
+// }
 
 // カメラ画面
 class Camera extends StatefulWidget {

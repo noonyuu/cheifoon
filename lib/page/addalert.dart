@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:sazikagen/component/appbar.dart';
 
@@ -124,29 +125,35 @@ class _AlertState extends State<Alert> {
     return TextButton(
       onPressed: () {
         imagePaths.setFilePath('');
-        Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+        Navigator.pop(context, true);
       },
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.15,
-        height: MediaQuery.of(context).size.height * 0.04,
-        decoration: ShapeDecoration(
-          color: ColorConst.recipename,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(width: 0.50),
+          width: MediaQuery.of(context).size.width * 0.15,
+          height: MediaQuery.of(context).size.height * 0.04,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Positioned.fill(
+                child: SvgPicture.asset(
+                  'assets/images/spoon_button.svg',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  '戻る',
+                  textAlign: TextAlign.left ,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-        child: Center(
-          child: Text(
-            '戻る',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ),
+        )
     );
   }
 
@@ -154,35 +161,41 @@ class _AlertState extends State<Alert> {
   Widget _buildAddButton() {
     return TextButton(
       onPressed: () {
+        print(count);
         if (_rectangleList.any((item) => item.selectedBottle == null)) {
           return; // 調味料が選択されていない場合、何もしない
         }
+        if (count == 0) return;
 
         setState(() {
           _rectangleList.add(seasoningItem());
         });
       },
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.15,
-        height: MediaQuery.of(context).size.height * 0.04,
-        decoration: ShapeDecoration(
-          color: ColorConst.recipename,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(width: 0.50),
+          width: MediaQuery.of(context).size.width * 0.15,
+          height: MediaQuery.of(context).size.height * 0.04,
+          child: Stack(
+            // Use Stack to position the SVG and text on top of each other
+            fit: StackFit.expand,
+            children: [
+              Positioned.fill(
+                child: SvgPicture.asset(
+                  'assets/images/spoon_button.svg',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  '追加',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
           ),
-        ),
-        child: Center(
-          child: Text(
-            '調味料追加',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ),
+        )
+
     );
   }
 
@@ -223,32 +236,34 @@ class _AlertState extends State<Alert> {
                 recipeInsert(menuId, item.selectedBottle?.bottleId, item.selectedNumber1, item.selectedNumber1);
               });
               imagePaths.setFilePath('');
-              Navigator.pop(context);
-              // 更新かけるとおかしくなる
-              // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
             }
           : null,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.15,
-        height: MediaQuery.of(context).size.height * 0.04,
-        decoration: ShapeDecoration(
-          color: ColorConst.recipename,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(width: 0.50),
+          width: MediaQuery.of(context).size.width * 0.15,
+          height: MediaQuery.of(context).size.height * 0.04,
+          child: Stack(
+            // Use Stack to position the SVG and text on top of each other
+            fit: StackFit.expand,
+            children: [
+              Positioned.fill(
+                child: SvgPicture.asset(
+                  'assets/images/spoon_button.svg',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  '決定',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
           ),
-        ),
-        child: Center(
-          child: Text(
-            '決定',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ),
+        )
+
     );
   }
 
@@ -263,7 +278,12 @@ class _AlertState extends State<Alert> {
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Camera(camera: cameras.first)));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Camera(camera: cameras.first,)),
+                  ).then((value) {
+                    setState(() {});
+                  });
                 },
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.3,
@@ -355,11 +375,23 @@ class _AlertState extends State<Alert> {
                   height: 30,
                 ),
                 _buildRectangleList(),
-                Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                  _buildbackButton(),
-                  _buildAddButton(),
-                  _buildDecisionButton(),
-                ]),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                        _buildbackButton(),
+                      ]),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.35,
+                    ),
+                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                      _buildAddButton(),
+                      _buildDecisionButton(),
+                    ]),
+                  ],
+                ),
               ],
             ),
           ),

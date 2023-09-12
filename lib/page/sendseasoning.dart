@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:sazikagen/component/appbar.dart';
 import 'package:sazikagen/constant/color_constant.dart';
 import 'package:sazikagen/logic/connection.dart';
@@ -28,6 +29,7 @@ class _SendState extends State<Send> {
   bool isLodging = false;
 
   List<String> seasoningName = [];
+  List<String> seasoningId = [];
   List<String> tableSpoon = [];
   List<String> teaSpoon = [];
 
@@ -134,6 +136,7 @@ class _SendState extends State<Send> {
                                         return CircularProgressIndicator();
                                       } else {
                                         seasoningName.add(snapshot.data![0]['seasoning_name']);
+                                        seasoningId.add(dataKey['seasoning_id'].toString());
                                         tableSpoon.add(dataKey['table_spoon'].toString());
                                         teaSpoon.add(dataKey['tea_spoon'].toString());
                                         return Text(snapshot.data![0]['seasoning_name']);
@@ -162,10 +165,25 @@ class _SendState extends State<Send> {
                 ],
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  _buildBackButton(),
-                  _buildSendButton(),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.05,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      _buildBackButton(),
+                    ],
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.53,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      _buildSendButton(),
+                    ],
+                  ),
                 ],
               ),
             ],
@@ -204,71 +222,73 @@ class _SendState extends State<Send> {
   // 戻るボタン
   Widget _buildBackButton() {
     return TextButton(
-      onPressed: () {
-        Navigator.pop(context);
-        // 更新かけるとおかしくなる
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
-      },
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.15,
-        height: MediaQuery.of(context).size.height * 0.04,
-        decoration: ShapeDecoration(
-          color: ColorConst.recipename,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(width: 0.50),
+        onPressed: () {
+          Navigator.pop(context);
+          // 更新かけるとおかしくなる
+          // Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.15,
+          height: MediaQuery.of(context).size.height * 0.04,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Positioned.fill(
+                child: SvgPicture.asset(
+                  'assets/images/spoon_button.svg',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  '戻る',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
           ),
-        ),
-        child: Center(
-          child: Text(
-            '戻る',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ),
-    );
+        ));
   }
 
 // 決定ボタン
   Widget _buildSendButton() {
     return TextButton(
-      onPressed: () {
-        // Navigator.push(
-        //     context, MaterialPageRoute(builder: (context) => HomePage()));
-        connection.fetchDataFromRaspberryPi(_recipe.title, seasoningName, tableSpoon, teaSpoon);
-        showDialog<void>(
-            barrierDismissible: false,
-            context: context,
-            builder: (_) {
-              return SendAlertDialog();
-            });
-      },
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.15,
-        height: MediaQuery.of(context).size.height * 0.04,
-        decoration: ShapeDecoration(
-          color: ColorConst.recipename,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(width: 0.50),
+        onPressed: () {
+          // Navigator.push(
+          //     context, MaterialPageRoute(builder: (context) => HomePage()));
+          connection.fetchDataFromRaspberryPi(_recipe.title, seasoningId,seasoningName, tableSpoon, teaSpoon);
+          showDialog<void>(
+              barrierDismissible: false,
+              context: context,
+              builder: (_) {
+                return SendAlertDialog();
+              });
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.15,
+          height: MediaQuery.of(context).size.height * 0.04,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Positioned.fill(
+                child: SvgPicture.asset(
+                  'assets/images/spoon_button.svg',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Text(
+                  '送信',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
           ),
-        ),
-        child: Center(
-          child: Text(
-            '送信',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ),
-    );
+        ));
   }
 }
 
