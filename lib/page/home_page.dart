@@ -1,22 +1,17 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sazikagen/constant/color_constant.dart';
-import '../component/appbar.dart';
-import '../model/rectangle_model.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'addalert.dart';
-import '../constant/String_constant.dart';
-import 'package:sazikagen/model/bottle_model.dart';
-import '../db/database_helper.dart';
+import '../model/rectangle_model.dart';
 import '../model/recipe_model.dart';
+import '../model/bottle_model.dart';
+import '../constant/color_constant.dart';
+import '../db/database_helper.dart';
 import '../controller/recipe_controller.dart';
 import '../controller/bottle_controller.dart';
 import '../component/card.dart';
 import '../component/bottle.dart';
-
-import 'package:flutter_svg/flutter_svg.dart';
+import '../component/appbar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,13 +21,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<RecipeModel> _recipepost = [];
-  List<BottleModel> _bottlepost = [];
-  List<BottleAdminModel> _bottleadmin = [];
+  List<RecipeModel> _menuPost = []; // レシピデータ
+  List<BottleModel> _bottlePost = []; // 調味料データ
+  List<BottleAdminModel> _bottleAdmin = []; // 用意されてる調味料データ
   List<Map<String, dynamic>> _queryResult = [];
   final dbHelper = DatabaseHelper.instance;
-  bool isMenuLoding = true;
-  bool isBottleLoding = true;
+
+  bool isMenuLading = true; // レシピデータ取得中のフラグ
+  bool isBottleLading = true; // 調味料データ取得中のフラグ
+
+  bool isInsertSeasoning = false; // 調味料を追加したかどうかのフラグ
 
   @override
   void initState() {
@@ -42,36 +40,37 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _initializeState() async {
     setState(() {
-      _recipepost.clear();
-      isMenuLoding = true;
-      _bottlepost.clear();
-      isBottleLoding = true;
-      _bottleadmin.clear();
+      // 各データを初期化
+      _menuPost.clear();
+      _bottlePost.clear();
+      _bottleAdmin.clear();
+      // 各フラグを初期化
+      isMenuLading = true;
+      isBottleLading = true;
     });
     await RecipeController.menuList().then((menuList) {
-    print(menuList);
       setState(() {
-        _recipepost = menuList;
-        isMenuLoding = false;
+        _menuPost = menuList;
+        isMenuLading = false;
       });
     }); // RecipeControllerからデータを取得
     await BottleController.bottleList().then((bottleList) {
       setState(() {
-        _bottlepost = bottleList;
-        isBottleLoding = false;
+        _bottlePost = bottleList;
+        isBottleLading = false;
       });
     }); // BottleControllerからデータを取得
     await BottleAdminController.bottleList().then((bottleList) {
       setState(() {
-        _bottleadmin = bottleList;
-        // isBottleLoding = false;
+        _bottleAdmin = bottleList;
+        // isBottleLading = false;
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isMenuLoding && isBottleLoding) {
+    if (isMenuLading && isBottleLading) {
       return Center(
           // プログレスインディケーターの表示
           child: SizedBox(
@@ -108,11 +107,11 @@ class _HomePageState extends State<HomePage> {
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2, // 列の数
                         ),
-                        itemCount: _recipepost.length,
+                        itemCount: _menuPost.length,
                         itemBuilder: (context, index) {
-                          int reversedIndex = _recipepost.length - 1 - index;
+                          int reversedIndex = _menuPost.length - 1 - index;
                           return CardComponent(
-                            recipe: _recipepost[reversedIndex],
+                            recipe: _menuPost[reversedIndex],
                           );
                         },
                       ),
@@ -133,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => Alert()));
                     },
                     child: Icon(Icons.add),
-                  ),// ボタン間にスペースを空けるための SizedBox
+                  ), // ボタン間にスペースを空けるための SizedBox
                 ],
               ),
             )),
@@ -156,7 +155,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Padding(
             // TODO ： 修正必須
-            padding: EdgeInsets.only(right: 12, left: 12, top: _bottlepost.isEmpty ? MediaQuery.of(context).size.height * 0.2 * 0.4 : MediaQuery.of(context).size.height * 0.2 * 0.1),
+            padding: EdgeInsets.only(right: 12, left: 12, top: _bottlePost.isEmpty ? MediaQuery.of(context).size.height * 0.2 * 0.4 : MediaQuery.of(context).size.height * 0.2 * 0.1),
             child: Row(
               children: [
                 IconButton(
@@ -173,10 +172,10 @@ class _HomePageState extends State<HomePage> {
                     child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: List.generate(_bottlepost.length, (index) {
+                    children: List.generate(_bottlePost.length, (index) {
                       return Row(
                         children: [
-                          BottleComponent(bottle: _bottlepost[index]),
+                          BottleComponent(bottle: _bottlePost[index]),
                           Container(
                             width: 15,
                           )
@@ -227,24 +226,27 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           content: Container(
-              height: 50,
-              child: StatefulBuilder(
-                  builder: (BuildContext context, StateSetter setState) => Center(
-                          child: DropdownButton<BottleAdminModel>(
-                        underline: Container(), //下線なくす
-                        value: itemAdmin.selectedBottle,
-                        onChanged: (newValue) {
-                          setState(() {
-                            itemAdmin.selectedBottle = newValue;
-                          });
-                        },
-                        items: _bottleadmin.map((bottle) {
-                          return DropdownMenuItem<BottleAdminModel>(
-                            value: bottle,
-                            child: Text(bottle.bottleTitle),
-                          );
-                        }).toList(),
-                      )))),
+            height: 50,
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) => Center(
+                child: DropdownButton<BottleAdminModel>(
+                  underline: Container(), //下線なくす
+                  value: itemAdmin.selectedBottle,
+                  onChanged: (newValue) {
+                    setState(() {
+                      itemAdmin.selectedBottle = newValue;
+                    });
+                  },
+                  items: _bottleAdmin.map((bottle) {
+                    return DropdownMenuItem<BottleAdminModel>(
+                      value: bottle,
+                      child: Text(bottle.bottleTitle),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ),
           actions: [
             IconButton(
               onPressed: () {
@@ -254,22 +256,25 @@ class _HomePageState extends State<HomePage> {
                   BottleModel newBottle = BottleModel(
                     bottleId: selectedBottle.bottleId,
                     bottleTitle: selectedBottle.bottleTitle,
+                    teaSecond: selectedBottle.teaSecond,
                   );
 
                   setState(() {
                     int id = itemAdmin.selectedBottle!.bottleId;
                     String name = itemAdmin.selectedBottle!.bottleTitle;
-                    // TODO:ゴリ押しさん
-                    double tea = 1.2;
-                    // double tea = itemAdmin.selectedBottle!.teaSecond;
-
+                    double tea = itemAdmin.selectedBottle!.teaSecond;
+                    // 調味料を追加
                     _insertSeasoning(id, name, tea);
-                    _bottlepost.add(newBottle);
+                    _bottlePost.add(newBottle);
+                    _initializeState().then((_) {
+                      isInsertSeasoning = true;
+                    });
                   });
+                  if (isInsertSeasoning) {
+                    // ダイアログを閉じる
+                    Navigator.pop(context, true);
+                  }
                   print('追加しました');
-
-                  // ダイアログを閉じる
-                  Navigator.pop(context,true);
                 }
               },
               icon: Icon(
@@ -298,10 +303,10 @@ class _HomePageState extends State<HomePage> {
     print('登録しました。id: $id');
   }
 
+// userがセットした調味料を追加
   void _insertSeasoning(int seasoningId, String title, double tea) async {
     Map<String, dynamic> row = {DatabaseHelper.seasoningId: seasoningId, DatabaseHelper.seasoningName: title, DatabaseHelper.teaSecond: tea};
-    final id = await dbHelper.insertc(row);
-    print('登録しました。id: $id');
+    await dbHelper.insertSeasoning(row);
   }
 
   void _query() async {

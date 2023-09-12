@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/material/dropdown.dart';
-
 import '../db/database_helper.dart';
 import '../model/bottle_model.dart';
-//import '../constant/String_constant.dart';
 
+// userがセットした調味料コントローラー
 class BottleController {
   static final dbHelper = DatabaseHelper.instance;
-  static List<Map<String, dynamic>> _bottleTable = [];
-  static List<BottleModel> _bottle = [];
+  static final List<Map<String, dynamic>> _bottleTable = [];
+  static final List<BottleModel> _bottle = [];
 
   static List<BottleModel> get bottleLists => _bottle;
 
   static Future<List<BottleModel>> bottleList() async {
+    // 初期化
     _bottleTable.clear();
     _bottle.clear();
+    // 調味料テーブルの照会
     await _queryBottleTable();
     await _initializeBottle();
     return _bottle;
@@ -32,6 +32,7 @@ class BottleController {
       _bottle.add(BottleModel(
         bottleId: row['seasoning_id'],
         bottleTitle: row['seasoning_name'],
+        teaSecond: row['tea_second'],
       ));
     }
   }
@@ -39,16 +40,19 @@ class BottleController {
   map(DropdownMenuItem<BottleModel> Function(dynamic bottle) param0) {}
 }
 
+// adminがセットした調味料コントローラー
 class BottleAdminController {
   static final dbHelper = DatabaseHelper.instance;
-  static List<Map<String, dynamic>> _bottleTable = [];
-  static List<BottleAdminModel> _bottle = [];
+  static final List<Map<String, dynamic>> _bottleTable = [];
+  static final List<BottleAdminModel> _bottle = [];
 
-  static List<BottleAdminModel> get bottleadminLists => _bottle;
+  static List<BottleAdminModel> get bottleAdminLists => _bottle;
 
   static Future<List<BottleAdminModel>> bottleList() async {
+    // 初期化
     _bottleTable.clear();
     _bottle.clear();
+    // 調味料テーブルの照会
     await _queryBottleTable();
     await _initializeBottle();
     return _bottle;
@@ -57,12 +61,17 @@ class BottleAdminController {
   // 調味料テーブルの照会
   static Future<void> _queryBottleTable() async {
     final allRows = await dbHelper.queryAdminSeasoningTable();
-    final Check = await dbHelper.getSeasoningInfo();
+    final check = await dbHelper.getSeasoningInfo();
 
     _bottleTable.addAll(allRows);
-
-    _bottleTable.removeWhere((element) => Check.any((removeItem) => removeItem['ASeasoningId'] == element['ASeasoningId']));
-    print(_bottleTable);
+      _bottleTable.removeWhere((element) {
+      final shouldRemove = check.any((removeItem) => removeItem['ASeasoningId'] == element['ASeasoningId']);
+      if (shouldRemove) {
+        print('Removing element with ASeasoningId ${element['ASeasoningId']}');
+      }
+      return shouldRemove;
+    });
+    print('_bottleTable (after removal): $_bottleTable');
   }
 
   // 調味料の初期化
@@ -71,6 +80,7 @@ class BottleAdminController {
       _bottle.add(BottleAdminModel(
         bottleId: row['ASeasoningId'],
         bottleTitle: row['ASeasoningName'],
+        teaSecond: row['Atea_second'],
       ));
     }
   }
