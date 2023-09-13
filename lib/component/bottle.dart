@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marquee/marquee.dart';
 import 'package:sazikagen/constant/color_constant.dart';
 import '../model/bottle_model.dart';
 
@@ -37,11 +38,18 @@ class BottleComponent extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Text(
-        '${_bottle.bottleTitle}',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 10),
-      ),
+      child: _bottle.bottleTitle.length > 4
+          ? Marquee(
+              text: _bottle.bottleTitle,
+              blankSpace: 20,
+              style: const TextStyle(fontSize: 10),
+              velocity: 10,
+            )
+          : Text(
+              _bottle.bottleTitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 10),
+            ),
     );
   }
 }

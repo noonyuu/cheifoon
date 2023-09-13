@@ -45,6 +45,7 @@ dependencies:
   numberpicker: ^2.1.2
   font_awesome_flutter: ^10.5.0
   flutter_native_splash: ^2.3.2
+  marquee: ^2.2.3
 
 dev_dependencies:
   flutter_test:
