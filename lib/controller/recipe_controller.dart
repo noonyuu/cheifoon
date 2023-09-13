@@ -7,15 +7,18 @@ import '../model/recipe_model.dart';
 
 class RecipeController {
   static final dbHelper = DatabaseHelper.instance;
-  static List<Map<String, dynamic>> _menuTable = [];
-  static List<RecipeModel> _recipe = [];
+  static final List<Map<String, dynamic>> _menuTable = []; // メニューテーブル
+  static final List<RecipeModel> _menu = []; // メニュー
 
   static Future<List<RecipeModel>> menuList() async {
+    // 初期化
     _menuTable.clear();
-    _recipe.clear();
+    _menu.clear();
+    // メニューテーブルの照会
     await _queryMenuTable();
+    // レシピデータの取得
     await _initializeRecipe();
-    return _recipe;
+    return _menu;
   }
 
   // メニューテーブルの照会
@@ -24,13 +27,14 @@ class RecipeController {
     _menuTable.addAll(allRows);
   }
 
+// メニューデータの取得
   static Future<void> _initializeRecipe() async {
     for (var row in _menuTable) {
       Uint8List imageBytes = row['menu_image'];
-      _recipe.add(RecipeModel(
+      _menu.add(RecipeModel(
         recipeId: row['menu_id'],
         title: row['menu_name'],
-        imagePath: imageBytes, // Assign the actual image bytes
+        imagePath: imageBytes,
       ));
     }
   }
