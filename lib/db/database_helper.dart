@@ -146,6 +146,7 @@ class DatabaseHelper {
     return await db!.query(seasoningTable);
   }
 
+// menuTableの全レコードを取得
   Future<List<Map<String, dynamic>>> queryMenuTable() async {
     Database? db = await instance.database;
     return await db!.query(menuTable);
@@ -179,7 +180,8 @@ class DatabaseHelper {
     return await db!.insert(adminSeasoning, row);
   }
 
-  Future<int> insertc(Map<String, dynamic> row) async {
+// userがセットした調味料を追加
+  Future<int> insertSeasoning(Map<String, dynamic> row) async {
     Database? db = await instance.database;
     return await db!.insert(seasoningTable, row);
   }

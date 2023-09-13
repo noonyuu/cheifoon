@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../db/database_helper.dart';
 import '../model/bottle_model.dart';
@@ -64,14 +65,14 @@ class BottleAdminController {
     final check = await dbHelper.getSeasoningInfo();
 
     _bottleTable.addAll(allRows);
-      _bottleTable.removeWhere((element) {
+    _bottleTable.removeWhere((element) {
       final shouldRemove = check.any((removeItem) => removeItem['ASeasoningId'] == element['ASeasoningId']);
       if (shouldRemove) {
-        print('Removing element with ASeasoningId ${element['ASeasoningId']}');
+        if (kDebugMode) print('Removing element with ASeasoningId ${element['ASeasoningId']}');
       }
       return shouldRemove;
     });
-    print('_bottleTable (after removal): $_bottleTable');
+    if (kDebugMode) print('_bottleTable (after removal): $_bottleTable');
   }
 
   // 調味料の初期化

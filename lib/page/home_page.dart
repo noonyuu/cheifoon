@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -29,8 +30,6 @@ class _HomePageState extends State<HomePage> {
 
   bool isMenuLading = true; // レシピデータ取得中のフラグ
   bool isBottleLading = true; // 調味料データ取得中のフラグ
-
-  bool isInsertSeasoning = false; // 調味料を追加したかどうかのフラグ
 
   @override
   void initState() {
@@ -163,7 +162,7 @@ class _HomePageState extends State<HomePage> {
                       Icons.add_circle_outline,
                     ),
                     onPressed: () {
-                      _Alertdrpodown(itemAdmin);
+                      _alertDropdown(itemAdmin);
                     }),
                 SizedBox(
                   width: 10,
@@ -192,134 +191,103 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  int index = 0;
-
-  void State() {
-    super.initState();
-    _initializeState();
-  }
-
-  // Future<void> _State() async {
-  //   // 登録済みの調味料を取得
-  //   List<BottleModel> _bottleController = [];
-
-  //   _bottleController = BottleController.bottleLists;
-  // }
-
   List<Map<String, dynamic>> queryList = [];
 
-  _Alertdrpodown(ItemAdmin itemAdmin) {
+  _alertDropdown(ItemAdmin itemAdmin) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: ColorConst.background,
-          title: const Column(
+          title: Column(
             children: [
-              Center(
-                  child: Text(
+              Text(
                 '調味料を選択',
-              )),
-              SizedBox(
-                height: 30,
-              )
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
-          content: Container(
-            height: 50,
-            child: StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) => Center(
-                child: DropdownButton<BottleAdminModel>(
-                  underline: Container(), //下線なくす
-                  value: itemAdmin.selectedBottle,
-                  onChanged: (newValue) {
-                    setState(() {
-                      itemAdmin.selectedBottle = newValue;
-                    });
-                  },
-                  items: _bottleAdmin.map((bottle) {
-                    return DropdownMenuItem<BottleAdminModel>(
-                      value: bottle,
-                      child: Text(bottle.bottleTitle),
-                    );
-                  }).toList(),
+          content: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+            child: SizedBox(
+              height: 50,
+              child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) => Center(
+                  child: DropdownButton<BottleAdminModel>(
+                    underline: Container(), //下線なくす
+                    value: itemAdmin.selectedBottle,
+                    onChanged: (newValue) {
+                      setState(() {
+                        itemAdmin.selectedBottle = newValue;
+                      });
+                    },
+                    items: _bottleAdmin.map((bottle) {
+                      return DropdownMenuItem<BottleAdminModel>(
+                        value: bottle,
+                        child: Text(bottle.bottleTitle),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
             ),
           ),
           actions: [
-            IconButton(
-              onPressed: () {
-                if (itemAdmin.selectedBottle != null) {
-                  BottleAdminModel selectedBottle = itemAdmin.selectedBottle!;
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(child: _bottleAdmin.isEmpty ? const Text('もう登録できる調味料はありません') : Container()),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        if (itemAdmin.selectedBottle != null) {
+                          BottleAdminModel selectedBottle = itemAdmin.selectedBottle!;
 
-                  BottleModel newBottle = BottleModel(
-                    bottleId: selectedBottle.bottleId,
-                    bottleTitle: selectedBottle.bottleTitle,
-                    teaSecond: selectedBottle.teaSecond,
-                  );
+                          BottleModel newBottle = BottleModel(
+                            bottleId: selectedBottle.bottleId,
+                            bottleTitle: selectedBottle.bottleTitle,
+                            teaSecond: selectedBottle.teaSecond,
+                          );
 
-                  setState(() {
-                    int id = itemAdmin.selectedBottle!.bottleId;
-                    String name = itemAdmin.selectedBottle!.bottleTitle;
-                    double tea = itemAdmin.selectedBottle!.teaSecond;
-                    // 調味料を追加
-                    _insertSeasoning(id, name, tea);
-                    _bottlePost.add(newBottle);
-                    _initializeState().then((_) {
-                      isInsertSeasoning = true;
-                    });
-                  });
-                  if (isInsertSeasoning) {
-                    // ダイアログを閉じる
-                    Navigator.pop(context, true);
-                  }
-                  print('追加しました');
-                }
-              },
-              icon: Icon(
-                Icons.add_circle,
-                size: 20,
-                color: Colors.black,
-              ),
+                          setState(() {
+                            int id = itemAdmin.selectedBottle!.bottleId;
+                            String name = itemAdmin.selectedBottle!.bottleTitle;
+                            double tea = itemAdmin.selectedBottle!.teaSecond;
+                            // 調味料を追加
+                            _insertSeasoning(id, name, tea);
+                            _bottlePost.add(newBottle);
+                            _initializeState().then((_) {
+                              Navigator.pop(context, true);
+                              if (kDebugMode) print('追加しました');
+                            });
+                          });
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.add_circle,
+                        size: 20,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             )
           ],
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
         );
       },
     ).then((value) => setState(() {}));
-  }
-
-// test data
-  void _insert() async {
-    Uint8List imageBytes = (await rootBundle.load('assets/images/recipe/sample/curry.png')).buffer.asUint8List();
-    Map<String, dynamic> row = {DatabaseHelper.menuName: 'カレー', DatabaseHelper.menuImage: imageBytes};
-    final id = await dbHelper.insert(row);
-    print('登録しました。id: $id');
-  }
-
-  void _insertb() async {
-    Map<String, dynamic> row = {DatabaseHelper.ASeasoningName: 'ウスターソース', DatabaseHelper.AteaSecond: 1.2};
-    final id = await dbHelper.insertb(row);
-    print('登録しました。id: $id');
   }
 
 // userがセットした調味料を追加
   void _insertSeasoning(int seasoningId, String title, double tea) async {
     Map<String, dynamic> row = {DatabaseHelper.seasoningId: seasoningId, DatabaseHelper.seasoningName: title, DatabaseHelper.teaSecond: tea};
     await dbHelper.insertSeasoning(row);
-  }
-
-  void _query() async {
-    final allRows = await dbHelper.queryAllRows();
-    print('全てのデータを照会しました。');
-    setState(() {
-      _queryResult = allRows;
-    });
-  }
-
-  void _delete() async {
-    final id = await dbHelper.delete();
-    _query();
-    print('削除しました。id: $id');
   }
 }
