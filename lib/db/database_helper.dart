@@ -112,9 +112,9 @@ class DatabaseHelper {
       await db.rawInsert('''INSERT INTO $menuTable ($menuName, $menuImage) VALUES (?, ?)''', ['カレー', curry]);
       await db.rawInsert('''INSERT INTO $menuTable ($menuName, $menuImage) VALUES (?, ?)''', ['オムライス', OmeletteRice]);
 
-      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES (?,?,?,?)''',[1,1,0,1]);
-      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES (?,?,?,?)''',[1,4,1,0]);// カレー,醤油,0,1,ウスターソース,1,1
-      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES(?,?,?,?)''',[2,4,0,2]);
+      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES (?,?,?,?)''', [1, 1, 0, 1]);
+      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES (?,?,?,?)''', [1, 4, 1, 0]); // カレー,醤油,0,1,ウスターソース,1,1
+      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES(?,?,?,?)''', [2, 4, 0, 2]);
     } catch (e) {
       print('エラー：$e');
     }
@@ -187,10 +187,27 @@ class DatabaseHelper {
   }
 
   // 削除処理
-  Future<int> delete() async {
+  Future<void> deleteBottle(int bottleId) async {
     Database? db = await instance.database;
-    await db!.delete(adminSeasoning);
-    return await db.delete(seasoningTable);
+    await db!.delete(seasoningTable, where: '$seasoningId = ?', whereArgs: [bottleId]);
+    // 削除した調味料を含むレシピとメニューを削除
+    // 削除された行のIDを保存するリスト
+    List<int> deletedIds = [];
+
+// データベースから削除する行を取得する
+    List<Map<String, dynamic>> rowsToDelete = await db.query(recipeTable, where: '$seasoningId = ?', whereArgs: [bottleId]);
+
+    if (rowsToDelete.isNotEmpty) {
+      for (final row in rowsToDelete) {
+        int id = row[menuId];
+        deletedIds.add(id); // 削除された行のIDをリストに追加
+      }
+      // データベースから指定したIDの行を削除
+      await db.delete(recipeTable, where: '$seasoningId = ?', whereArgs: [bottleId]);
+      for (int i = 0; i < deletedIds.length; i++) {
+        await db.delete(menuTable, where: '$menuId = ?', whereArgs: [deletedIds[i]]);
+      }
+    }
   }
 
   Future<List<Map<String, dynamic>>> queryRecipe() async {

@@ -168,21 +168,31 @@ class _HomePageState extends State<HomePage> {
                   width: 10,
                 ),
                 Expanded(
-                    child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: List.generate(_bottlePost.length, (index) {
-                      return Row(
-                        children: [
-                          BottleComponent(bottle: _bottlePost[index]),
-                          Container(
-                            width: 15,
-                          )
-                        ],
-                      );
-                    }),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(_bottlePost.length, (index) {
+                        return Row(
+                          children: [
+                            BottleComponent(
+                              key: UniqueKey(), // ここで UniqueKey を使用して異なるキーを持つインスタンスを生成
+                              bottle: _bottlePost[index],
+                              onDeletePressed: () {
+                                // 削除ボタンが押されたときに再描画をトリガー
+                                setState(() {
+                                  _initializeState();
+                                });
+                              },
+                            ),
+                            Container(
+                              width: 15,
+                            ),
+                          ],
+                        );
+                      }),
+                    ),
                   ),
-                ))
+                )
               ],
             ),
           ),
