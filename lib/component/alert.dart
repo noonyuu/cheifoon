@@ -17,7 +17,8 @@ class AlertDialogs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('$bottleTitleボトルを削除しますか？',
+      title: Text('$bottleTitleを削除します',
+          textAlign: TextAlign.center, // テキストを中央揃え
           style: TextStyle(
             fontWeight: FontWeight.bold,
           )),
