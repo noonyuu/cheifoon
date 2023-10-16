@@ -66,9 +66,9 @@ class BottleAdminController {
 
     _bottleTable.addAll(allRows);
     _bottleTable.removeWhere((element) {
-      final shouldRemove = check.any((removeItem) => removeItem['ASeasoningId'] == element['ASeasoningId']);
+      final shouldRemove = check.any((removeItem) => removeItem['admin_seasoningId'] == element['admin_seasoningId']);
       if (shouldRemove) {
-        if (kDebugMode) print('Removing element with ASeasoningId ${element['ASeasoningId']}');
+        if (kDebugMode) print('Removing element with admin_seasoningId ${element['admin_seasoningId']}');
       }
       return shouldRemove;
     });
@@ -79,9 +79,9 @@ class BottleAdminController {
   static Future<void> _initializeBottle() async {
     for (var row in _bottleTable) {
       _bottle.add(BottleAdminModel(
-        bottleId: row['ASeasoningId'],
-        bottleTitle: row['ASeasoningName'],
-        teaSecond: row['Atea_second'],
+        bottleId: row['admin_seasoningId'],
+        bottleTitle: row['admin_seasoningName'],
+        teaSecond: row['admin_teaSecond'],
       ));
     }
   }

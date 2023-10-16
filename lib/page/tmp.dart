@@ -294,13 +294,13 @@ class _AlertState extends State<Alert> {
               width: MediaQuery.of(context).size.width * 0.1,
               height: MediaQuery.of(context).size.height * 0.055,
               child: NumberPicker(
-                value: recipeItem.selectedNumber1, // 値を個別に持たせるために各インスタンスから
+                value: recipeItem.tableSpoon, // 値を個別に持たせるために各インスタンスから
                 decoration: BoxDecoration(),
                 minValue: 0,
                 maxValue: 6,
                 onChanged: (value) {
                   setState(() {
-                    recipeItem.selectedNumber1 = value;
+                    recipeItem.tableSpoon = value;
                   });
                 },
               ),
@@ -322,12 +322,12 @@ class _AlertState extends State<Alert> {
               width: MediaQuery.of(context).size.width * 0.1,
               height: MediaQuery.of(context).size.height * 0.055,
               child: NumberPicker(
-                value: recipeItem.selectedNumber2, // 値を個別に持たせるために各インスタンスから
+                value: recipeItem.teaSpoon, // 値を個別に持たせるために各インスタンスから
                 minValue: 0,
                 maxValue: 3,
                 onChanged: (value) {
                   setState(() {
-                    recipeItem.selectedNumber2 = value;
+                    recipeItem.teaSpoon = value;
                   });
                 },
               ),

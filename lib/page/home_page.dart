@@ -22,13 +22,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<RecipeModel> _menuPost = []; // レシピデータ
-  List<BottleModel> _bottlePost = []; // 調味料データ
+  List<RecipeModel> _recipePost = [];   // レシピデータ
+  List<BottleModel> _bottlePost = [];   // 調味料データ
   List<BottleAdminModel> _bottleAdmin = []; // 用意されてる調味料データ
   List<Map<String, dynamic>> _queryResult = [];
   final dbHelper = DatabaseHelper.instance;
 
-  bool isMenuLading = true; // レシピデータ取得中のフラグ
+  bool isMenuLading = true;   // レシピデータ取得中のフラグ
   bool isBottleLading = true; // 調味料データ取得中のフラグ
 
   @override
@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _initializeState() async {
     setState(() {
       // 各データを初期化
-      _menuPost.clear();
+      _recipePost.clear();
       _bottlePost.clear();
       _bottleAdmin.clear();
       // 各フラグを初期化
@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
     });
     await RecipeController.menuList().then((menuList) {
       setState(() {
-        _menuPost = menuList;
+        _recipePost = menuList;
         isMenuLading = false;
       });
     }); // RecipeControllerからデータを取得
@@ -106,11 +106,11 @@ class _HomePageState extends State<HomePage> {
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2, // 列の数
                         ),
-                        itemCount: _menuPost.length,
+                        itemCount: _recipePost.length,
                         itemBuilder: (context, index) {
-                          int reversedIndex = _menuPost.length - 1 - index;
+                          int reversedIndex = _recipePost.length - 1 - index;
                           return CardComponent(
-                            recipe: _menuPost[reversedIndex],
+                            recipe: _recipePost[reversedIndex],
                           );
                         },
                       ),
@@ -273,7 +273,7 @@ class _HomePageState extends State<HomePage> {
                             _bottlePost.add(newBottle);
                             _initializeState().then((_) {
                               Navigator.pop(context, true);
-                              if (kDebugMode) print('追加しました');
+                              if (kDebugMode) print('$_bottleAdmin.追加しました');
                             });
                           });
                         }

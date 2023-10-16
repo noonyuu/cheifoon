@@ -6,6 +6,7 @@ import 'package:sazikagen/logic/connection.dart';
 import 'package:sazikagen/model/recipe_model.dart';
 
 import '../db/database_helper.dart';
+import '../db/menu_show.dart';
 import '../logic/connection.dart';
 import 'home_page.dart';
 
@@ -21,7 +22,7 @@ class Send extends StatefulWidget {
 class _SendState extends State<Send> {
   final dbHelper = DatabaseHelper.instance;
   // List<String> seasoningList = ['醤油', 'ウスターソース']; // 調味料のリスト
-  List<Map<String, dynamic>> queryRecipe = [];
+  List<dynamic> queryRecipe = [];
   List<Map<String, dynamic>> querySeasoning = [];
 
   late RecipeModel _recipe; // レシピをここに保存
@@ -202,11 +203,10 @@ class _SendState extends State<Send> {
   // }
 
   recipeTable() async {
-    // Map<String, dynamic> row = {DatabaseHelper.menuId: _recipe.recipeId};
-    // final selectedRows = await dbHelper.getRecordById(_recipe.recipeId);
-    final recipeInfo = await dbHelper.getRecipeInfo(_recipe.recipeId);
+    print('recipeID:${_recipe.recipeId}');
+    List<dynamic> tmpMenu = await getMenu(_recipe.recipeId);
     setState(() {
-      queryRecipe = recipeInfo;
+      queryRecipe = tmpMenu;
     });
   }
 
@@ -258,7 +258,7 @@ class _SendState extends State<Send> {
         onPressed: () {
           // Navigator.push(
           //     context, MaterialPageRoute(builder: (context) => HomePage()));
-          connection.fetchDataFromRaspberryPi(_recipe.title, seasoningId,seasoningName, tableSpoon, teaSpoon);
+          connection.fetchDataFromRaspberryPi(_recipe.title, seasoningId, seasoningName, tableSpoon, teaSpoon);
           showDialog<void>(
               barrierDismissible: false,
               context: context,

@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/src/response.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:sazikagen/component/appbar.dart';
 
@@ -12,6 +13,8 @@ import 'package:sazikagen/constant/color_constant.dart';
 import '../../controller/bottle_controller.dart';
 import 'package:sazikagen/model/bottle_model.dart';
 import '../db/database_helper.dart';
+import '../db/menu_add.dart';
+import '../db/recipe_add.dart';
 import '../logic/camera.dart';
 import '../model/rectangle_model.dart';
 import 'home_page.dart';
@@ -26,7 +29,7 @@ class Alert extends StatefulWidget {
 }
 
 class _AlertState extends State<Alert> {
-  List<seasoningItem> _rectangleList = []; // 四角形を追加していくためのリスト
+  final List<seasoningItem> _rectangleList = []; // 四角形を追加していくためのリスト
   List<BottleModel> _bottleController = []; // ドロップダウンリストに表示するためのリスト
   String _recipeName = ''; // レシピ名を入れるための変数
 
@@ -78,7 +81,7 @@ class _AlertState extends State<Alert> {
                 Container(
                   width: MediaQuery.of(context).size.width * 0.25,
                   height: MediaQuery.of(context).size.height * 0.13,
-                  child: NumPicker(recipeItem),
+                  child: numPicker(recipeItem),
                 ),
               Align(
                 alignment: Alignment.center,
@@ -123,11 +126,11 @@ class _AlertState extends State<Alert> {
 
   Widget _buildbackButton() {
     return TextButton(
-      onPressed: () {
-        imagePaths.setFilePath('');
-        Navigator.pop(context, true);
-      },
-      child: Container(
+        onPressed: () {
+          imagePaths.setFilePath('');
+          Navigator.pop(context, true);
+        },
+        child: Container(
           width: MediaQuery.of(context).size.width * 0.15,
           height: MediaQuery.of(context).size.height * 0.04,
           child: Stack(
@@ -143,35 +146,30 @@ class _AlertState extends State<Alert> {
                 padding: const EdgeInsets.all(2.0),
                 child: Text(
                   '戻る',
-                  textAlign: TextAlign.left ,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold
-                  ),
+                  textAlign: TextAlign.left,
+                  style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
           ),
-        )
-    );
+        ));
   }
 
   // 追加ボタンが押された時
   Widget _buildAddButton() {
     return TextButton(
-      onPressed: () {
-        print(count);
-        if (_rectangleList.any((item) => item.selectedBottle == null)) {
-          return; // 調味料が選択されていない場合、何もしない
-        }
-        if (count == 0) return;
+        onPressed: () {
+          print(count);
+          if (_rectangleList.any((item) => item.selectedBottle == null)) {
+            return; // 調味料が選択されていない場合、何もしない
+          }
+          if (count == 0) return;
 
-        setState(() {
-          _rectangleList.add(seasoningItem());
-        });
-      },
-      child: Container(
+          setState(() {
+            _rectangleList.add(seasoningItem());
+          });
+        },
+        child: Container(
           width: MediaQuery.of(context).size.width * 0.15,
           height: MediaQuery.of(context).size.height * 0.04,
           child: Stack(
@@ -194,9 +192,7 @@ class _AlertState extends State<Alert> {
               ),
             ],
           ),
-        )
-
-    );
+        ));
   }
 
   Widget _Dropdown(seasoningItem recipeItem) {
@@ -229,17 +225,22 @@ class _AlertState extends State<Alert> {
 // 決定ボタン押されたとき
   Widget _buildDecisionButton() {
     return TextButton(
-      onPressed: areAllIngredientsSelected() && imageSelected()
-          ? () async {
-              int menuId = await menuInsert(_recipeName, imagePaths.getFilePath());
-              _rectangleList.forEach((item) async {
-                recipeInsert(menuId, item.selectedBottle?.bottleId, item.selectedNumber1, item.selectedNumber1);
-              });
-              imagePaths.setFilePath('');
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
-            }
-          : null,
-      child: Container(
+        onPressed: areAllIngredientsSelected() && imageSelected()
+            ? () async {
+              // TODO: user_idを変更する
+                int recipeId = await postRecipe(1,_recipeName, imagePaths.getFilePath());
+                List<Map<String, dynamic>> menu = [];
+                _rectangleList.forEach((item) {
+                  int? i = item.selectedBottle?.bottleId ?? 0;
+                  menu.add({"recipe_id": recipeId, "user_id": 1, "seasoning_id": i, "table_spoon": item.tableSpoon - 1, "tea_spoon": item.teaSpoon - 1});
+                });
+                print('Menu Contents: $menu'); 
+                await postMenu(menu);
+                imagePaths.setFilePath('');
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+              }
+            : null,
+        child: Container(
           width: MediaQuery.of(context).size.width * 0.15,
           height: MediaQuery.of(context).size.height * 0.04,
           child: Stack(
@@ -262,9 +263,7 @@ class _AlertState extends State<Alert> {
               ),
             ],
           ),
-        )
-
-    );
+        ));
   }
 
 // TODO:カメラ画面の表示
@@ -280,7 +279,10 @@ class _AlertState extends State<Alert> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Camera(camera: cameras.first,)),
+                    MaterialPageRoute(
+                        builder: (context) => Camera(
+                              camera: cameras.first,
+                            )),
                   ).then((value) {
                     setState(() {});
                   });
@@ -400,7 +402,7 @@ class _AlertState extends State<Alert> {
     );
   }
 
-  Widget NumPicker(seasoningItem recipeItem) {
+  Widget numPicker(seasoningItem recipeItem) {
     return Column(
       children: [
         Row(
@@ -418,14 +420,14 @@ class _AlertState extends State<Alert> {
               width: MediaQuery.of(context).size.width * 0.1,
               height: MediaQuery.of(context).size.height * 0.055,
               child: NumberPicker(
-                value: recipeItem.selectedNumber1, // 値を個別に持たせるために各インスタンスから
+                value: recipeItem.tableSpoon, // 値を個別に持たせるために各インスタンスから
                 decoration: BoxDecoration(),
                 minValue: 0,
                 maxValue: 5,
                 infiniteLoop: true, // 0 ~ 5しか表示されない
                 onChanged: (value) {
                   setState(() {
-                    recipeItem.selectedNumber1 = value;
+                    recipeItem.tableSpoon = value;
                   });
                 },
               ),
@@ -446,13 +448,13 @@ class _AlertState extends State<Alert> {
               width: MediaQuery.of(context).size.width * 0.1,
               height: MediaQuery.of(context).size.height * 0.055,
               child: NumberPicker(
-                value: recipeItem.selectedNumber2, // 値を個別に持たせるために各インスタンスから
+                value: recipeItem.teaSpoon, // 値を個別に持たせるために各インスタンスから
                 minValue: 0,
                 maxValue: 2,
                 infiniteLoop: true, // 0 ~ 2しか表示されない
                 onChanged: (value) {
                   setState(() {
-                    recipeItem.selectedNumber2 = value;
+                    recipeItem.teaSpoon = value;
                   });
                 },
               ),
@@ -463,46 +465,46 @@ class _AlertState extends State<Alert> {
     );
   }
 
-  Future<Uint8List?> readCacheFileToUint8List(String filePath) async {
-    try {
-      File file = File(filePath);
+  // Future<Uint8List?> readCacheFileToUint8List(String filePath) async {
+  //   try {
+  //     File file = File(filePath);
 
-      if (await file.exists()) {
-        Uint8List uint8List = await file.readAsBytes();
-        return uint8List;
-      } else {
-        print("File not found: $filePath");
-        return null;
-      }
-    } catch (e) {
-      print("Error reading file: $e");
-      return null;
-    }
-  }
+  //     if (await file.exists()) {
+  //       Uint8List uint8List = await file.readAsBytes();
+  //       return uint8List;
+  //     } else {
+  //       print("File not found: $filePath");
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     print("Error reading file: $e");
+  //     return null;
+  //   }
+  // }
 
-  Future<int> menuInsert(menuName, imagePath) async {
-    Uint8List? uint8List = await readCacheFileToUint8List(imagePath);
-    int? lastMenuId;
-    Map<String, dynamic> menuTable = {DatabaseHelper.menuName: menuName, DatabaseHelper.menuImage: uint8List};
-    return lastMenuId = await dbHelper.insertMenu(menuTable);
-  }
+  // Future<int> menuInsert(menuName, imagePath) async {
+  //   Uint8List? uint8List = await readCacheFileToUint8List(imagePath);
+  //   int? lastMenuId;
+  //   Map<String, dynamic> menuTable = {DatabaseHelper.menuName: menuName, DatabaseHelper.menuImage: uint8List};
+  //   return lastMenuId = await dbHelper.insertMenu(menuTable);
+  // }
 
-  void recipeInsert(menuId, seasoningId, tableSpoon, teaSpoon) async {
-    print(menuId);
-    int? lastMenuId;
-    Map<String, dynamic> recipeTable = {};
-    Map<String, dynamic> menuTable = {};
+  // void recipeInsert(menuId, seasoningId, tableSpoon, teaSpoon) async {
+  //   print(menuId);
+  //   int? lastMenuId;
+  //   Map<String, dynamic> recipeTable = {};
+  //   Map<String, dynamic> menuTable = {};
 
-    recipeTable = {
-      DatabaseHelper.menuId: menuId,
-      DatabaseHelper.seasoningId: seasoningId,
-      DatabaseHelper.tableSpoon: tableSpoon != 0 ? tableSpoon - 1 : 0,
-      DatabaseHelper.teaSpoon: teaSpoon != 0 ? teaSpoon - 1 : 0
-    };
-    await dbHelper.insertRecipe(recipeTable);
-  }
+  //   recipeTable = {
+  //     DatabaseHelper.menuId: menuId,
+  //     DatabaseHelper.seasoningId: seasoningId,
+  //     DatabaseHelper.tableSpoon: tableSpoon != 0 ? tableSpoon - 1 : 0,
+  //     DatabaseHelper.teaSpoon: teaSpoon != 0 ? teaSpoon - 1 : 0
+  //   };
+  //   await dbHelper.insertRecipe(recipeTable);
+  // }
 }
-
+// --------------------------------------------------------------------------------
 // class seasoningItemCount {
 //   static int s = 0;
 //   static void setSeasoningItemCount() {

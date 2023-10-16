@@ -43,15 +43,15 @@ class CardComponent extends StatelessWidget {
                 Container(
                   width: cardSize,
                   height: cardSize * 0.6,
-                  child: ClipRRect(
+                  child: const ClipRRect(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(24.0),
                       topRight: Radius.circular(24.0),
                     ),
-                    child: FittedBox(
-                      child: Image.memory(_recipe.imagePath),
-                      fit: BoxFit.fill,
-                    ),
+                    // child: FittedBox(
+                    //   child: Image.memory(_recipe.imagePath),
+                    //   fit: BoxFit.fill,
+                    // ),
                     // child: Image.asset('assets/images/appBar.png'),
                   ),
                 ),
@@ -59,7 +59,7 @@ class CardComponent extends StatelessWidget {
                   height: cardSize * 0.25,
                   alignment: Alignment.center,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(24.0),
                       bottomRight: Radius.circular(24.0),
                     ),
@@ -68,7 +68,7 @@ class CardComponent extends StatelessWidget {
                       color: ColorConst.background,
                       // height: cardSize * 0.20,
                       width: cardSize * 0.8,
-                      child: Text('${_recipe.title}'),
+                      child: Text(_recipe.title),
                     ),
                   ),
                 ),
