@@ -115,17 +115,20 @@ class _AlertState extends State<Alert> {
 
 // 調味料を表示していくためのリスト
   Widget _buildRectangleList() {
-    return Expanded(
-      child: Scrollbar(
-        child: SingleChildScrollView(
-          child: Column(
-            // 各調味料の情報を保持してあるリストを展開
-            // children: _rectangleList.map((recipeItem) {
-            //   return _buildRectangle(recipeItem);
-            // }).toList(),
-            children: _rectangleList.asMap().entries.map((entry) {
-              return _buildRectangle(entry.value, entry.key);
-            }).toList(),
+    return SizedBox(
+      height: 320,
+      child: Expanded(
+        child: Scrollbar(
+          child: SingleChildScrollView(
+            child: Column(
+              // 各調味料の情報を保持してあるリストを展開
+              // children: _rectangleList.map((recipeItem) {
+              //   return _buildRectangle(recipeItem);
+              // }).toList(),
+              children: _rectangleList.asMap().entries.map((entry) {
+                return _buildRectangle(entry.value, entry.key);
+              }).toList(),
+            ),
           ),
         ),
       ),
@@ -357,7 +360,7 @@ class _AlertState extends State<Alert> {
 
         body: SingleChildScrollView(
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.8,
+            // height: MediaQuery.of(context).size.height * 1,
             child: Column(
               children: [
                 const SizedBox(
@@ -450,11 +453,14 @@ class _AlertState extends State<Alert> {
                 // TODO:カメラ画面の表示
                 // count > 0 ? _camera() : Container(),
 
-                const SizedBox(
-                  // 検索バーと調味料の間に隙間入れるために設置
-                  height: 30,
+                // const SizedBox(
+                //   // 検索バーと調味料の間に隙間入れるために設置
+                //   height: 30,
+                // ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 30, bottom: 30),
+                  child: _buildRectangleList(),
                 ),
-                _buildRectangleList(),
                 Row(
                   children: [
                     Padding(
