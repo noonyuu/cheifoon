@@ -1,14 +1,31 @@
+import 'dart:typed_data';
+import 'dart:io'; // 追加
 import 'package:flutter/material.dart';
 import 'package:sazikagen/constant/color_constant.dart';
 import '../model/recipe_model.dart';
 import '../page/sendseasoning.dart';
 
 class CardComponent extends StatelessWidget {
+  Uint8List fileToUint8List(String filePath) {
+    print('filePath: $filePath');
+    File file = File(filePath);
+
+    if (!file.existsSync()) {
+      // ファイルが存在しない場合のエラーハンドリング
+      print('Error: ファイルが存在しません - $filePath');
+      return Uint8List(0); // またはエラーを通知する適切な方法に応じて変更
+    }
+
+    List<int> bytes = file.readAsBytesSync();
+    return Uint8List.fromList(bytes);
+  }
+
   final RecipeModel _recipe;
   const CardComponent({
     Key? key,
     required RecipeModel recipe,
   }) : _recipe = recipe;
+
   @override
   Widget build(BuildContext context) {
     return _Recipe(context);
@@ -19,7 +36,6 @@ class CardComponent extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // print('${_recipe}');
         Navigator.push(context, MaterialPageRoute(builder: (context) => Send(recipe: _recipe)));
       },
       child: InkWell(
@@ -33,8 +49,8 @@ class CardComponent extends StatelessWidget {
             width: cardSize,
             decoration: BoxDecoration(
               border: Border.all(
-                color: ColorConst.mainColor, // 枠線の色
-                width: 5.0, // 枠線の幅
+                color: ColorConst.mainColor,
+                width: 5.0,
               ),
               borderRadius: BorderRadius.circular(30),
             ),
@@ -43,16 +59,15 @@ class CardComponent extends StatelessWidget {
                 Container(
                   width: cardSize,
                   height: cardSize * 0.6,
-                  child: const ClipRRect(
+                  child: ClipRRect(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(24.0),
                       topRight: Radius.circular(24.0),
                     ),
-                    // child: FittedBox(
-                    //   child: Image.memory(_recipe.imagePath),
-                    //   fit: BoxFit.fill,
-                    // ),
-                    // child: Image.asset('assets/images/appBar.png'),
+                    child: Image.memory(
+                      _recipe.imagePath,
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
                 Container(
@@ -64,9 +79,8 @@ class CardComponent extends StatelessWidget {
                       bottomRight: Radius.circular(24.0),
                     ),
                     child: Container(
-                      alignment: Alignment.center, // text center
+                      alignment: Alignment.center,
                       color: ColorConst.background,
-                      // height: cardSize * 0.20,
                       width: cardSize * 0.8,
                       child: Text(_recipe.title),
                     ),

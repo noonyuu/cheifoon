@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -7,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/src/response.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sazikagen/component/appbar.dart';
 
 import 'package:sazikagen/constant/color_constant.dart';
@@ -227,17 +229,34 @@ class _AlertState extends State<Alert> {
     return TextButton(
         onPressed: areAllIngredientsSelected() && imageSelected()
             ? () async {
-              // TODO: user_idを変更する
-                int recipeId = await postRecipe(1,_recipeName, imagePaths.getFilePath());
-                List<Map<String, dynamic>> menu = [];
-                _rectangleList.forEach((item) {
-                  int? i = item.selectedBottle?.bottleId ?? 0;
-                  menu.add({"recipe_id": recipeId, "user_id": 1, "seasoning_id": i, "table_spoon": item.tableSpoon - 1, "tea_spoon": item.teaSpoon - 1});
-                });
-                print('Menu Contents: $menu'); 
-                await postMenu(menu);
-                imagePaths.setFilePath('');
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                // TODO: user_idを変更する
+                try {
+                  String imageFile = imagePaths.getFilePath();
+                  File file = File(imageFile);
+                  // List<int> bytes = await file.readAsBytes();
+                  
+                  // final directory = await getApplicationDocumentsDirectory();
+                  // File newFile = File('${directory.path}/11.jpg');
+                  // await newFile.writeAsBytes(bytes);
+
+                  // print('imagefile${bytes}');
+                  Uint8List? uint8List = await file.readAsBytes();
+                  print(uint8List);
+                  String id = await postRecipe(1, _recipeName, uint8List);
+                  int recipeId = int.parse(id);
+                  print(recipeId);
+                  List<Map<String, dynamic>> menu = [];
+                  _rectangleList.forEach((item) {
+                    int? i = item.selectedBottle?.bottleId ?? 0;
+                    menu.add({"recipe_id": recipeId, "user_id": 1, "seasoning_id": i, "table_spoon": item.tableSpoon - 1, "tea_spoon": item.teaSpoon - 1});
+                  });
+                  print('Menu Contents: $menu');
+                  await postMenu(menu);
+                  imagePaths.setFilePath('');
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                } catch (e) {
+                  print(e);
+                }
               }
             : null,
         child: Container(
@@ -465,22 +484,22 @@ class _AlertState extends State<Alert> {
     );
   }
 
-  // Future<Uint8List?> readCacheFileToUint8List(String filePath) async {
-  //   try {
-  //     File file = File(filePath);
+  Future<Uint8List?> readCacheFileToUint8List(String filePath) async {
+    try {
+      File file = File(filePath);
 
-  //     if (await file.exists()) {
-  //       Uint8List uint8List = await file.readAsBytes();
-  //       return uint8List;
-  //     } else {
-  //       print("File not found: $filePath");
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     print("Error reading file: $e");
-  //     return null;
-  //   }
-  // }
+      if (await file.exists()) {
+        Uint8List uint8List = await file.readAsBytes();
+        return uint8List;
+      } else {
+        print("File not found: $filePath");
+        return null;
+      }
+    } catch (e) {
+      print("Error reading file: $e");
+      return null;
+    }
+  }
 
   // Future<int> menuInsert(menuName, imagePath) async {
   //   Uint8List? uint8List = await readCacheFileToUint8List(imagePath);

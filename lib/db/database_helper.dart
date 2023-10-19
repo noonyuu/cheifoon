@@ -82,7 +82,7 @@ class DatabaseHelper {
       // admin追加
       await db.execute('''INSERT INTO $adminSeasoning ($adminSeasoningName, $adminTeaSecond) VALUES('醤油', 1.2)''');
       await db.execute('''INSERT INTO $adminSeasoning ($adminSeasoningName, $adminTeaSecond) VALUES('みりん', 1.2)''');
-      await db.execute('''INSERT INTO $adminSeasoning ($adminSeasoningName, $adminTeaSecond) VALUES('さけ', 1.2)''');
+      // await db.execute('''INSERT INTO $adminSeasoning ($adminSeasoningName, $adminTeaSecond) VALUES('さけ', 1.2)''');
       await db.execute('''INSERT INTO $adminSeasoning ($adminSeasoningName, $adminTeaSecond) VALUES('ウスターソース', 1.2)''');
       // 調味料テーブル
       await db.execute('''CREATE TABLE $seasoningTable (

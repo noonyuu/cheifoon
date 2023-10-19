@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import 'endPoint.dart';
+
 Future<List<dynamic>> getMenu(int recipeId) async {
   final response = await http.get(
-    Uri.parse('http://192.168.0.12:8081/menu/view/1/$recipeId'),
+    Uri.parse('http://${get_end_point()}:8081/menu/view/1/$recipeId'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },

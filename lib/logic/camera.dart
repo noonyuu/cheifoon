@@ -1,13 +1,12 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-
 import '../constant/color_constant.dart';
-
 
 // class CameraApp extends StatelessWidget {
 //   const CameraApp({
@@ -172,6 +171,8 @@ class imagePaths {
   }
 
   static String getFilePath() {
+    // Uint8List bytes = File(filePath).readAsBytesSync();
+    // print("cccccccccccc${bytes}");
     return filePath;
   }
 }

@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import 'endPoint.dart';
+
 Future<http.Response> postMenu(menu) async {
   final response = await http.post(
-    Uri.parse('http://192.168.0.12:8081/menu/add'), // サーバーのエンドポイントを指定
+    Uri.parse('http://${get_end_point()}:8081/menu/add'), // サーバーのエンドポイントを指定
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
