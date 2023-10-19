@@ -53,6 +53,20 @@ class _AlertState extends State<Alert> {
     return Stack(
       alignment: Alignment.center,
       children: [
+        // Padding(
+        //   padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+        //   child: Container(
+        //     width: MediaQuery.of(context).size.width * 0.8,
+        //     height: MediaQuery.of(context).size.height * 0.15,
+        //     decoration: ShapeDecoration(
+        //       color: ColorConst.recipename,
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(10.0),
+        //         side: BorderSide(width: 0.50),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         Padding(
           padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
           child: Container(
@@ -107,6 +121,10 @@ class _AlertState extends State<Alert> {
         child: Scrollbar(
           child: SingleChildScrollView(
             child: Column(
+              // 各調味料の情報を保持してあるリストを展開
+              // children: _rectangleList.map((recipeItem) {
+              //   return _buildRectangle(recipeItem);
+              // }).toList(),
               children: _rectangleList.asMap().entries.map((entry) {
                 return _buildRectangle(entry.value, entry.key);
               }).toList(),
@@ -340,7 +358,8 @@ class _AlertState extends State<Alert> {
         //   backgroundColor: ColorConst.background,
         // ),
 
-        body: Container(
+        body: SingleChildScrollView(
+          child: Container(
             // height: MediaQuery.of(context).size.height * 1,
             child: Column(
               children: [
@@ -373,6 +392,18 @@ class _AlertState extends State<Alert> {
                     Stack(
                       alignment: Alignment.center, // 検索バー背景を真ん中に持ってくる
                       children: [
+                        // Container(
+                        //   // 検索バーの背景の四角形
+                        //   height: MediaQuery.of(context).size.height * 0.07,
+                        //   width: MediaQuery.of(context).size.width * 0.75,
+                        //   decoration: ShapeDecoration(
+                        //     color: ColorConst.background,
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(10.0),
+                        //       side: BorderSide(width: 0.50),
+                        //     ),
+                        //   ),
+                        // ),
                         Container(
                           height: MediaQuery.of(context).size.height * 0.07,
                           width: MediaQuery.of(context).size.width * 0.4,
@@ -426,12 +457,13 @@ class _AlertState extends State<Alert> {
                 //   // 検索バーと調味料の間に隙間入れるために設置
                 //   height: 30,
                 // ),
-                // appbarを入れるならこのパディング(430~433行目)はコメントアウトしてください。
+
+                // appbarがない時は462~465行目のコメントアウトを外す。467はコメントアウト。
                 // Padding(
                 //   padding: const EdgeInsets.only(top: 30, bottom: 30),
                 //   child: _buildRectangleList(),
                 // ),
-                // appbar使わないなら435行目をコメントアウトして、430~433のコメントアウト外してください。
+                // appbarがある時は465のコメントアウトを外す。460~463をコメントアウトにする。
                 _buildRectangleList(),
                 Row(
                   children: [
@@ -456,6 +488,7 @@ class _AlertState extends State<Alert> {
             ),
           ),
         ),
+      ),
     );
   }
 

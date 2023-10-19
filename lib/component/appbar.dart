@@ -29,36 +29,36 @@ class _AppBarComponentWidgetState extends State<AppBarComponentWidget> {
     return PreferredSize(
       preferredSize: const Size.fromHeight(96.0),
       child:
-        // 元のやつ(画像ver.)
-        // AppBar(
-        //   // backgroundColor: Colors.transparent,
-        //   elevation: 0,
-        //   flexibleSpace: Stack(
-        //     children: [
-        //       Positioned.fill(
-        //         child: SvgPicture.asset(
-        //           'assets/images/appbar.svg',
-        //           fit: BoxFit.cover,
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
+          // 元のやつ(画像ver.)
+          // AppBar(
+          //   // backgroundColor: Colors.transparent,
+          //   elevation: 0,
+          //   flexibleSpace: Stack(
+          //     children: [
+          //       Positioned.fill(
+          //         child: SvgPicture.asset(
+          //           'assets/images/appbar.svg',
+          //           fit: BoxFit.cover,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
-        // テキストver(真ん中にならない。辺にスペース取られてる。だからと言ってaddalertのappbar消したらダメ。)
-        AppBar(
-          title: Center(
-            child: Text(
-              'Add Recipe',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: ColorConst.black,
-              ),
+          // テキストver(真ん中にならない。辺にスペース取られてる。だからと言ってaddalertのappbar消したらダメ。)
+          AppBar(
+        title: Center(
+          child: Text(
+            'Add Recipe',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: ColorConst.black,
             ),
           ),
-          backgroundColor: ColorConst.background,
         ),
+        backgroundColor: ColorConst.background,
+      ),
     );
   }
 }
