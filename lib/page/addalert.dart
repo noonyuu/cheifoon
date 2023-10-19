@@ -116,7 +116,7 @@ class _AlertState extends State<Alert> {
 // 調味料を表示していくためのリスト
   Widget _buildRectangleList() {
     return SizedBox(
-      height: 320,
+      height: MediaQuery.of(context).size.height * 0.45,
       child: Expanded(
         child: Scrollbar(
           child: SingleChildScrollView(
