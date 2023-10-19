@@ -15,3 +15,11 @@ class ColorConst {
   static const Color paleYellow = Color.fromARGB(255, 255, 248, 183);
   static const Color red = Colors.red;
 }
+
+class newColorConst {
+  static const Color background = Color.fromRGBO(223, 215, 191, 1);
+  static const Color mainColor = Color.fromRGBO(63, 35, 5, 1);
+  static const Color white = Color.fromRGBO(255, 255, 250, 1);
+  static const Color tag = Color.fromRGBO(255, 255, 250, 1);
+  static const Color transparent = Colors.transparent;
+}
