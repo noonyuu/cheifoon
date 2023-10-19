@@ -46,9 +46,7 @@ class _HomePageState extends State<HomePage> {
       // 各フラグを初期化
       isMenuLading = true;
       isBottleLading = true;
-    }
-        //TODO:戻す
-        );
+    });
     await RecipeController.menuList().then((menuList) {
       setState(() {
         _menuPost = menuList;
@@ -95,6 +93,9 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   //調味料表示
                   _Seasoning(ItemAdmin(), seasoningItem()),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(
@@ -105,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                       child: Stack(children: [
                         Container(
                           // alignment: Alignment.centerRight,
-                          height: 500,
+                          height: 600,
                           width: 400,
                           child: Image.asset(
                             'assets/new_img/recipeframe.png',
@@ -114,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(
-                              right: 20, left: 50, top: 20, bottom: 48),
+                              right: 20, left: 50, top: 26, bottom: 49),
                           child: GridView.builder(
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
@@ -162,12 +163,18 @@ class _HomePageState extends State<HomePage> {
         child: Stack(
       children: [
         Center(
-          child: Container(
-            height: MediaQuery.of(context).size.height * 0.25,
-            width: MediaQuery.of(context).size.width * 1.5,
-            child: Image.asset('assets/new_img/bc.png', fit: BoxFit.fill),
+          // child: Container(
+          // height: MediaQuery.of(context).size.height,
+          // width: MediaQuery.of(context).size.width,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 75, left: 40, right: 20),
+            child: Image.asset(
+              'assets/new_img/table.png',
+            ),
           ),
         ),
+
+        // ),
         Padding(
           // TODO ： 修正必須
           padding: EdgeInsets.only(
@@ -228,8 +235,8 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: ColorConst.background,
-          title: Column(
+          backgroundColor: newColorConst.background,
+          title: const Column(
             children: [
               Text(
                 '調味料を選択',

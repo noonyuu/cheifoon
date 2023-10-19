@@ -101,7 +101,7 @@ class _AlertState extends State<Alert> {
                   },
                   child: FaIcon(
                     FontAwesomeIcons.trash,
-                    color: ColorConst.red,
+                    color: basicColorConst.red,
                     size: 20.0, // 任意のサイズを指定
                   ),
                 ),
@@ -316,16 +316,16 @@ class _AlertState extends State<Alert> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: ColorConst.white, // 枠線の色
+                    color: newColorConst.mainColor, // 枠線の色
                     width: 5.0, // 枠線の幅
                   ),
-                  color: ColorConst.mainColor,
+                  color: newColorConst.subcolor,
                   // borderRadius: BorderRadius.circular(24.0), // 角の丸みを設定
                 ),
                 child: imagePaths.getFilePath().isNotEmpty
                     ? Image.file(File(imagePaths.getFilePath()))
                     : Icon(Icons.camera_alt_outlined,
-                        size: 50, color: ColorConst.white),
+                        size: 50, color: basicColorConst.white),
               )),
         ),
       ),
@@ -338,7 +338,7 @@ class _AlertState extends State<Alert> {
     return SafeArea(
       child: Scaffold(
         // 全体画面
-        backgroundColor: ColorConst.background,
+        backgroundColor: newColorConst.background,
         // 方法１。appbar.dartに書き込む。
         appBar: AppBarComponentWidget(
           isInfoIconEnabled: false,
@@ -369,11 +369,11 @@ class _AlertState extends State<Alert> {
                 ),
                 // 方法３。appbarにしないで直接設置。
                 Text(
-                  "AddRecipe",
+                  "レシピを追加しよう！",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: newColorConst.mainColor,
                   ),
                 ),
                 const SizedBox(
@@ -410,7 +410,7 @@ class _AlertState extends State<Alert> {
                           decoration: BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: ColorConst.white, // 下線色
+                                color: newColorConst.mainColor, // 下線色
                                 width: 2.0, // 下線の太さ
                               ),
                             ),
@@ -439,7 +439,8 @@ class _AlertState extends State<Alert> {
                                 border: InputBorder.none, // 枠線を消す
                                 // placeholderみたいなやつ
                                 hintText: 'レシピ名',
-                                hintStyle: TextStyle(color: Colors.grey),
+                                hintStyle:
+                                    TextStyle(color: basicColorConst.grey),
                               ),
                               keyboardType: TextInputType.text, // キーボードの形を決める
                             ),

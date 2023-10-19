@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
+import 'package:google_fonts/google_fonts.dart'; //Google font
+
 import 'package:sazikagen/constant/color_constant.dart';
 import '../model/bottle_model.dart';
 import 'alert.dart';
@@ -83,13 +85,13 @@ class _BottleComponentState extends State<BottleComponent> {
             ? Marquee(
                 text: widget._bottle.bottleTitle,
                 blankSpace: 20,
-                style: const TextStyle(fontSize: 10),
+                style: GoogleFonts.notoSansJp(fontSize: 10),
                 velocity: 10,
               )
             : Text(
                 widget._bottle.bottleTitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 10),
+                style: GoogleFonts.notoSansJp(fontSize: 10),
               ),
       ),
     );

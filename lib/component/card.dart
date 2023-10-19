@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:marquee/marquee.dart';
+import 'package:path/path.dart';
 
 //page import
 import 'package:sazikagen/constant/color_constant.dart';
@@ -30,56 +31,58 @@ class CardComponent extends StatelessWidget {
             MaterialPageRoute(builder: (context) => Send(recipe: _recipe)));
       },
       child: InkWell(
-          child: Stack(
-        children: [
-          Container(
-            height: hightSize,
-            child: Image.asset('assets/new_img/memo.png'),
-          ),
-          Positioned(
-            top: 35,
-            left: 25,
-            child: Column(
-              children: [
+        child: Stack(
+          children: [
+            Container(
+              height: hightSize,
+              child: Image.asset('assets/new_img/memo.png'),
+            ),
+            Positioned(
+              top: 35,
+              left: 15,
+              child: Column(children: [
                 Container(
                   transform: Matrix4.rotationZ(-14 * pi / 180),
                   //料理の写真の大きさ
                   height: hightSize * 0.4,
                   width: widthSize * 0.5,
+
                   child: ClipRRect(
                     child: Image.memory(_recipe.imagePath),
                   ),
                 ),
-
-                //料理名
-
-                Container(
-                  transform: Matrix4.rotationZ(-12 * pi / 180),
-                  width: widthSize * 0.5,
-                  height: hightSize * 0.2,
-                  alignment: Alignment.center,
-                  child: Container(
-                    width: widthSize * 3,
-                    height: hightSize * 0.2,
-                    child: _recipe.title.length > 10
-                        ? Marquee(
-                            text: _recipe.title,
-                            blankSpace: 30,
-                            style: GoogleFonts.slacksideOne(fontSize: 15),
-                            velocity: 10,
-                          )
-                        : Text(
-                            _recipe.title,
-                            textAlign: TextAlign.right,
-                            style: GoogleFonts.slacksideOne(fontSize: 20),
-                          ),
-                  ),
-                ),
-              ],
+              ]),
             ),
-          )
-        ],
-      )),
+
+            //料理名
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 36,
+                top: 70,
+              ),
+              child: Container(
+                transform: Matrix4.rotationZ(-14 * pi / 180),
+                width: widthSize * 0.4,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: _recipe.title.length > 5
+                      ? Marquee(
+                          text: _recipe.title,
+                          blankSpace: 30,
+                          style: GoogleFonts.notoSansJp(fontSize: 15),
+                          velocity: 10,
+                        )
+                      : Text(
+                          _recipe.title,
+                          textAlign: TextAlign.right,
+                          style: GoogleFonts.notoSansJp(fontSize: 13),
+                        ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
   // Widget _Recipe(BuildContext context) {
