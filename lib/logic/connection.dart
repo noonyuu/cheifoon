@@ -2,7 +2,12 @@ import 'dart:io';
 import 'dart:convert';
 
 class connection {
-  static Future<void> fetchDataFromRaspberryPi(String menuName, List<String> seasoningId, List<String> seasoningName, List<String> tableSpoon, List<String> teaSpoon) async {
+  static Future<void> fetchDataFromRaspberryPi(
+      String menuName,
+      List<String> seasoningId,
+      List<String> seasoningName,
+      List<String> tableSpoon,
+      List<String> teaSpoon) async {
     String seasoningInfo = '';
     for (int i = 0; i < seasoningName.length; i++) {
       if (tableSpoon[i] != "0") {

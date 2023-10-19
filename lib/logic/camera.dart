@@ -2,12 +2,11 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-
 import '../constant/color_constant.dart';
-
 
 // class CameraApp extends StatelessWidget {
 //   const CameraApp({
@@ -41,6 +40,7 @@ class Camera extends StatefulWidget {
 class _CameraState extends State<Camera> {
   late CameraController _controller;
 
+  // final croppedData = image.
   @override
   void initState() {
     super.initState();
@@ -73,7 +73,7 @@ class _CameraState extends State<Camera> {
         body: Stack(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 1.0, // 高さを指定,
+              height: MediaQuery.of(context).size.height * 0.8, // 高さを指定,
               width: MediaQuery.of(context).size.height * 0.6, // 高さを指定,
               child: cameraPreview,
             ),
@@ -90,7 +90,8 @@ class _CameraState extends State<Camera> {
                       // 表示用の画面に遷移
                       await Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ImagePreview(imagePath: image.path),
+                          builder: (context) =>
+                              ImagePreview(imagePath: image.path),
                           fullscreenDialog: true,
                         ),
                       );
@@ -98,7 +99,7 @@ class _CameraState extends State<Camera> {
                   },
                   child: FaIcon(
                     FontAwesomeIcons.circleDot,
-                    color: ColorConst.mainColor,
+                    color: newColorConst.background,
                     size: 50.0, // 任意のサイズを指定
                   ),
                 ),
@@ -127,18 +128,20 @@ class ImagePreview extends StatelessWidget {
           children: [
             Center(
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.6,
-                width: MediaQuery.of(context).size.width * 0.9,
+                height: MediaQuery.of(context).size.height * 0.3,
+                width: MediaQuery.of(context).size.height * 0.3,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Image.file(File(imagePath)),
+                  child: Image.file(
+                    File(imagePath),
+                  ),
                 ),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: ColorConst.mainColor, // 枠線の色
+                    color: newColorConst.mainColor, // 枠線の色
                     width: 5.0, // 枠線の幅
                   ),
-                  color: ColorConst.paleYellow,
+                  color: newColorConst.background,
                   borderRadius: BorderRadius.circular(24.0), // 角の丸みを設定
                 ),
               ),
@@ -153,7 +156,8 @@ class ImagePreview extends StatelessWidget {
                     Navigator.popUntil(context, (_) => count++ >= 2);
                   },
                   child: Text('OK'),
-                  style: ElevatedButton.styleFrom(backgroundColor: ColorConst.mainColor),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: newColorConst.mainColor),
                 ),
               ],
             ),

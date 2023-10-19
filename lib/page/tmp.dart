@@ -45,7 +45,7 @@ class _AlertState extends State<Alert> {
             width: MediaQuery.of(context).size.width * 0.8,
             height: MediaQuery.of(context).size.height * 0.15,
             decoration: ShapeDecoration(
-              color: ColorConst.recipename,
+              color: newColorConst.recipename,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
                 side: BorderSide(width: 0.50),
@@ -91,13 +91,14 @@ class _AlertState extends State<Alert> {
   Widget _buildbackButton() {
     return TextButton(
       onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomePage()));
       },
       child: Container(
         width: MediaQuery.of(context).size.width * 0.15,
         height: MediaQuery.of(context).size.height * 0.04,
         decoration: ShapeDecoration(
-          color: ColorConst.recipename,
+          color: newColorConst.recipename,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
             side: BorderSide(width: 0.50),
@@ -133,7 +134,7 @@ class _AlertState extends State<Alert> {
         width: MediaQuery.of(context).size.width * 0.15,
         height: MediaQuery.of(context).size.height * 0.04,
         decoration: ShapeDecoration(
-          color: ColorConst.recipename,
+          color: newColorConst.recipename,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
             side: BorderSide(width: 0.50),
@@ -163,14 +164,15 @@ class _AlertState extends State<Alert> {
     return TextButton(
       onPressed: areAllIngredientsSelected()
           ? () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => HomePage()));
             }
           : null,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.15,
         height: MediaQuery.of(context).size.height * 0.04,
         decoration: ShapeDecoration(
-          color: ColorConst.recipename,
+          color: newColorConst.recipename,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
             side: BorderSide(width: 0.50),
@@ -215,7 +217,7 @@ class _AlertState extends State<Alert> {
           isInfoIconEnabled: false,
         ),
         // 全体画面
-        backgroundColor: ColorConst.background,
+        backgroundColor: newColorConst.background,
         body: Column(
           children: [
             const SizedBox(
@@ -230,7 +232,7 @@ class _AlertState extends State<Alert> {
                   height: MediaQuery.of(context).size.height * 0.07,
                   width: MediaQuery.of(context).size.width * 0.75,
                   decoration: ShapeDecoration(
-                    color: ColorConst.recipename,
+                    color: newColorConst.recipename,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                       side: BorderSide(width: 0.50),
@@ -252,7 +254,7 @@ class _AlertState extends State<Alert> {
                         border: InputBorder.none, // 枠線を消す
                         // placeholderみたいなやつ
                         hintText: 'レシピ名',
-                        hintStyle: TextStyle(color: ColorConst.grey),
+                        hintStyle: TextStyle(color: basicColorConst.grey),
                       ),
                       keyboardType: TextInputType.text, // キーボードの形を決める
                     ),
