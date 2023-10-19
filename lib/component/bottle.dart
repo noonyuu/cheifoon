@@ -42,9 +42,12 @@ class _BottleComponentState extends State<BottleComponent> {
               },
             );
           },
-          child: Image.asset('assets/images/bottle.png'),
+          child: Container(
+              height: MediaQuery.of(context).size.height * 0.1,
+              width: 60,
+              child: Image.asset('assets/new_img/bottle.png')),
         ),
-        Positioned(left: 8, top: 30, child: _tag()),
+        Positioned(left: 10, top: 62, child: _tag()),
       ],
     );
   }
@@ -68,9 +71,9 @@ class _BottleComponentState extends State<BottleComponent> {
         width: 40,
         height: 20,
         decoration: BoxDecoration(
-          color: ColorConst.tag,
+          color: newColorConst.tag,
           border: Border.all(
-            color: ColorConst.mainColor, // 枠線の色
+            color: newColorConst.mainColor, // 枠線の色
             width: 2.0,
             // 枠線の幅
           ),

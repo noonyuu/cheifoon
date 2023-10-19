@@ -4,7 +4,8 @@ import 'package:flutter_svg/svg.dart';
 import '../constant/color_constant.dart';
 import '../page/addalert.dart';
 
-class AppBarComponentWidget extends StatefulWidget implements PreferredSizeWidget {
+class AppBarComponentWidget extends StatefulWidget
+    implements PreferredSizeWidget {
   final bool isInfoIconEnabled;
   static String filePath = '';
 
@@ -21,8 +22,8 @@ class AppBarComponentWidget extends StatefulWidget implements PreferredSizeWidge
   @override
   _AppBarComponentWidgetState createState() => _AppBarComponentWidgetState();
 }
-class _AppBarComponentWidgetState extends State<AppBarComponentWidget> {
 
+class _AppBarComponentWidgetState extends State<AppBarComponentWidget> {
   @override
   Widget build(BuildContext context) {
     return PreferredSize(
@@ -32,10 +33,12 @@ class _AppBarComponentWidgetState extends State<AppBarComponentWidget> {
         elevation: 0,
         flexibleSpace: Stack(
           children: [
-            Positioned.fill(
-              child: SvgPicture.asset(
-                'assets/images/appbar.svg',
-                fit: BoxFit.cover,
+            Positioned(
+              child: Image.asset(
+                'assets/new_img/cheifoon.png',
+                height: MediaQuery.of(context).size.height * 0.2,
+                width: MediaQuery.of(context).size.width * 1.2,
+                // fit: BoxFit.fill,
               ),
             ),
           ],

@@ -8,7 +8,7 @@ import '../model/recipe_model.dart';
 import '../model/bottle_model.dart';
 import '../constant/color_constant.dart';
 import '../db/database_helper.dart';
-import '../controller/recipe_controller.dart';
+import '../controller/recipe_controller.dart'; //TODO:戻す
 import '../controller/bottle_controller.dart';
 import '../component/card.dart';
 import '../component/bottle.dart';
@@ -46,7 +46,9 @@ class _HomePageState extends State<HomePage> {
       // 各フラグを初期化
       isMenuLading = true;
       isBottleLading = true;
-    });
+    }
+        //TODO:戻す
+        );
     await RecipeController.menuList().then((menuList) {
       setState(() {
         _menuPost = menuList;
@@ -80,7 +82,7 @@ class _HomePageState extends State<HomePage> {
     } else {
       return SafeArea(
         child: Scaffold(
-            backgroundColor: ColorConst.background,
+            backgroundColor: newColorConst.background,
             appBar: AppBarComponentWidget(
               isInfoIconEnabled: true,
             ),
@@ -91,29 +93,43 @@ class _HomePageState extends State<HomePage> {
               },
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
                   //調味料表示
                   _Seasoning(ItemAdmin(), seasoningItem()),
-                  const SizedBox(
-                    height: 30,
-                  ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(right: 10, left: 10),
-                      child: GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2, // 列の数
-                        ),
-                        itemCount: _menuPost.length,
-                        itemBuilder: (context, index) {
-                          int reversedIndex = _menuPost.length - 1 - index;
-                          return CardComponent(
-                            recipe: _menuPost[reversedIndex],
-                          );
-                        },
+                      padding: const EdgeInsets.only(
+                        right: 10,
+                        left: 10,
+                        top: 0,
                       ),
+                      child: Stack(children: [
+                        Container(
+                          // alignment: Alignment.centerRight,
+                          height: 500,
+                          width: 400,
+                          child: Image.asset(
+                            'assets/new_img/recipeframe.png',
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              right: 20, left: 50, top: 20, bottom: 48),
+                          child: GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2, // 列の数
+                            ),
+                            itemCount: _menuPost.length,
+                            itemBuilder: (context, index) {
+                              int reversedIndex = _menuPost.length - 1 - index;
+                              return CardComponent(
+                                recipe: _menuPost[reversedIndex],
+                              );
+                            },
+                          ),
+                        ),
+                      ]),
                     ),
                   ),
                 ],
@@ -126,9 +142,10 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   FloatingActionButton(
                     heroTag: "btn1",
-                    backgroundColor: ColorConst.mainColor,
+                    backgroundColor: newColorConst.mainColor,
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Alert()));
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Alert()));
                     },
                     child: Icon(Icons.add),
                   ), // ボタン間にスペースを空けるための SizedBox
@@ -142,63 +159,66 @@ class _HomePageState extends State<HomePage> {
 //調味料ウィジェット
   Widget _Seasoning(ItemAdmin itemAdmin, seasoningItem recipeItem) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.9,
-      height: MediaQuery.of(context).size.height * 0.2,
-      child: Stack(
-        children: [
-          Center(
-            child: SvgPicture.asset(
-              'assets/images/bac.svg',
-              fit: BoxFit.fill,
-            ),
+        child: Stack(
+      children: [
+        Center(
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.25,
+            width: MediaQuery.of(context).size.width * 1.5,
+            child: Image.asset('assets/new_img/bc.png', fit: BoxFit.fill),
           ),
-          Padding(
-            // TODO ： 修正必須
-            padding: EdgeInsets.only(right: 12, left: 12, top: _bottlePost.isEmpty ? MediaQuery.of(context).size.height * 0.2 * 0.4 : MediaQuery.of(context).size.height * 0.2 * 0.1),
-            child: Row(
-              children: [
-                IconButton(
+        ),
+        Padding(
+          // TODO ： 修正必須
+          padding: EdgeInsets.only(
+              right: 40,
+              left: 40,
+              top: _bottlePost.isEmpty
+                  ? MediaQuery.of(context).size.height * 0.2 * 0.4
+                  : MediaQuery.of(context).size.height * 0.2 * 0.1),
+          child: Row(
+            children: [
+              Container(
+                child: IconButton(
                     icon: Icon(
                       Icons.add_circle_outline,
                     ),
                     onPressed: () {
                       _alertDropdown(itemAdmin);
                     }),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(_bottlePost.length, (index) {
-                        return Row(
-                          children: [
-                            BottleComponent(
-                              key: UniqueKey(), // ここで UniqueKey を使用して異なるキーを持つインスタンスを生成
-                              bottle: _bottlePost[index],
-                              onDeletePressed: () {
-                                // 削除ボタンが押されたときに再描画をトリガー
-                                setState(() {
-                                  _initializeState();
-                                });
-                              },
-                            ),
-                            Container(
-                              width: 15,
-                            ),
-                          ],
-                        );
-                      }),
-                    ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(_bottlePost.length, (index) {
+                      return Row(
+                        children: [
+                          BottleComponent(
+                            key:
+                                UniqueKey(), // ここで UniqueKey を使用して異なるキーを持つインスタンスを生成
+                            bottle: _bottlePost[index],
+                            onDeletePressed: () {
+                              // 削除ボタンが押されたときに再描画をトリガー
+                              setState(() {
+                                _initializeState();
+                              });
+                            },
+                          ),
+                          Container(
+                            width: 15,
+                          ),
+                        ],
+                      );
+                    }),
                   ),
-                )
-              ],
-            ),
+                ),
+              )
+            ],
           ),
-        ],
-      ),
-    );
+        ),
+      ],
+    ));
   }
 
   List<Map<String, dynamic>> queryList = [];
@@ -249,14 +269,18 @@ class _HomePageState extends State<HomePage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Center(child: _bottleAdmin.isEmpty ? const Text('もう登録できる調味料はありません') : Container()),
+                Center(
+                    child: _bottleAdmin.isEmpty
+                        ? const Text('もう登録できる調味料はありません')
+                        : Container()),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     IconButton(
                       onPressed: () {
                         if (itemAdmin.selectedBottle != null) {
-                          BottleAdminModel selectedBottle = itemAdmin.selectedBottle!;
+                          BottleAdminModel selectedBottle =
+                              itemAdmin.selectedBottle!;
 
                           BottleModel newBottle = BottleModel(
                             bottleId: selectedBottle.bottleId,
@@ -289,7 +313,8 @@ class _HomePageState extends State<HomePage> {
               ],
             )
           ],
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
         );
       },
     ).then((value) => setState(() {}));
@@ -297,7 +322,11 @@ class _HomePageState extends State<HomePage> {
 
 // userがセットした調味料を追加
   void _insertSeasoning(int seasoningId, String title, double tea) async {
-    Map<String, dynamic> row = {DatabaseHelper.seasoningId: seasoningId, DatabaseHelper.seasoningName: title, DatabaseHelper.teaSecond: tea};
+    Map<String, dynamic> row = {
+      DatabaseHelper.seasoningId: seasoningId,
+      DatabaseHelper.seasoningName: title,
+      DatabaseHelper.teaSecond: tea
+    };
     await dbHelper.insertSeasoning(row);
   }
 }
