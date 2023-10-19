@@ -72,8 +72,8 @@ class _AlertState extends State<Alert> {
           child: Container(
             width: MediaQuery.of(context).size.width * 0.8,
             height: MediaQuery.of(context).size.height * 0.15,
-            child: SvgPicture.asset(
-              'assets/images/board.svg',
+            child: Image.asset(
+              'assets/images/board.png',
               fit: BoxFit.fill,
             ),
           ),
