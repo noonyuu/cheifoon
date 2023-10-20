@@ -32,18 +32,19 @@ class _BottleComponentState extends State<BottleComponent> {
     return Stack(
       children: [
         GestureDetector(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialogs(
-                  bottleTitle: widget._bottle.bottleTitle,
-                  bottleId: widget._bottle.bottleId,
-                  onDeletePressed: widget.onDeletePressed,
-                );
-              },
-            );
-          },
+          // TODO: bottle操作のアラートを出す
+          // onTap: () {
+          //   showDialog(
+          //     context: context,
+          //     builder: (BuildContext context) {
+          //       return AlertDialogs(
+          //         bottleTitle: widget._bottle.bottleTitle,
+          //         bottleId: widget._bottle.bottleId,
+          //         onDeletePressed: widget.onDeletePressed,
+          //       );
+          //     },
+          //   );
+          // },
           child: Container(
               height: MediaQuery.of(context).size.height * 0.1,
               width: 60,
