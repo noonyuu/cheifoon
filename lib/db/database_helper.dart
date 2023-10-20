@@ -80,7 +80,7 @@ class DatabaseHelper {
       // admin追加
       await db.execute('''INSERT INTO $adminSeasoning (ASeasoningName, Atea_second) VALUES('醤油', 1.2)''');
       await db.execute('''INSERT INTO $adminSeasoning (ASeasoningName, Atea_second) VALUES('みりん', 1.2)''');
-      await db.execute('''INSERT INTO $adminSeasoning (ASeasoningName, Atea_second) VALUES('さけ', 1.2)''');
+      // await db.execute('''INSERT INTO $adminSeasoning (ASeasoningName, Atea_second) VALUES('さけ', 1.2)''');
       await db.execute('''INSERT INTO $adminSeasoning (ASeasoningName, Atea_second) VALUES('ウスターソース', 1.2)''');
       // 調味料テーブル
       await db.execute('''CREATE TABLE $seasoningTable (
@@ -90,11 +90,12 @@ class DatabaseHelper {
         $ASeasoningId INTEGER,
         FOREIGN KEY ($ASeasoningId) REFERENCES $adminSeasoning($ASeasoningId)
       )''');
+      Uint8List log = (await rootBundle.load('assets/new_img/logo.png')).buffer.asUint8List();
       // メニューテーブル
       await db.execute('''CREATE TABLE $menuTable (
         $menuId INTEGER PRIMARY KEY AUTOINCREMENT,
         $menuName TEXT NOT NULL,
-        $menuImage BLOB NOT NULL
+        $menuImage BLOB DEFAULT $log
       )''');
       // レシピテーブル
       await db.execute('''CREATE TABLE $recipeTable (
@@ -107,14 +108,15 @@ class DatabaseHelper {
         FOREIGN KEY ($seasoningId) REFERENCES $seasoningTable ($seasoningId)
       )''');
       // TODO: テストデータ
-      Uint8List curry = (await rootBundle.load('assets/images/recipe/sample/curry.png')).buffer.asUint8List();
-      Uint8List OmeletteRice = (await rootBundle.load('assets/images/recipe/sample/OmeletteRice.png')).buffer.asUint8List();
+      Uint8List curry = (await rootBundle.load('assets/images/recipe/sample/recipe2.jpg')).buffer.asUint8List();
+      Uint8List OmeletteRice = (await rootBundle.load('assets/images/recipe/sample/recipe1.jpg')).buffer.asUint8List();
       await db.rawInsert('''INSERT INTO $menuTable ($menuName, $menuImage) VALUES (?, ?)''', ['カレー', curry]);
+      await db.rawInsert('''INSERT INTO $menuTable ($menuName, $menuImage) VALUES (?, ?)''', ['オムライス', OmeletteRice]);
       await db.rawInsert('''INSERT INTO $menuTable ($menuName, $menuImage) VALUES (?, ?)''', ['オムライス', OmeletteRice]);
 
       await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES (?,?,?,?)''', [1, 1, 0, 1]);
-      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES (?,?,?,?)''', [1, 4, 1, 0]); // カレー,醤油,0,1,ウスターソース,1,1
-      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES(?,?,?,?)''', [2, 4, 0, 2]);
+      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES (?,?,?,?)''', [1, 3, 1, 0]); // カレー,醤油,0,1,ウスターソース,1,1
+      await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES(?,?,?,?)''', [2, 3, 0, 2]);
     } catch (e) {
       print('エラー：$e');
     }
