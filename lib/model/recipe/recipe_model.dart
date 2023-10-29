@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'dart:typed_data';
 
-part 'recipe.freezed.dart';
-part 'recipe.g.dart';
+part 'recipe_model.freezed.dart';
+part 'recipe_model.g.dart';
 
 class Uint8ListConverter implements JsonConverter<Uint8List, String> {
   const Uint8ListConverter();

@@ -1,7 +1,9 @@
-import 'bottle_model.dart';
+import 'package:sazikagen/model/user_bottle/user_bottle_model.dart';
+
+import 'admin_botle/admin_bottle_model.dart';
 
 class seasoningItem {
-  BottleModel? selectedBottle;
+  UserBottle? selectedBottle;
   int tableSpoon = 1;
   int teaSpoon = 1;
 
@@ -9,7 +11,7 @@ class seasoningItem {
 }
 
 class ItemAdmin {
-  BottleAdminModel? selectedBottle;
+  AdminBottle? selectedBottle;
   int tableSpoon = 1;
   int teaSpoon = 1;
 

@@ -2,8 +2,7 @@ import 'dart:typed_data';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sazikagen/constant/color_constant.dart';
-import '../model/recipe_model.dart';
-import '../model/recipe_model.dart';
+import '../model/recipe/recipe_model.dart';
 import '../page/sendseasoning.dart';
 
 class CardComponent extends StatelessWidget {

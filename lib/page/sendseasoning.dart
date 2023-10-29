@@ -1,14 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:sazikagen/component/appbar.dart';
-import 'package:sazikagen/constant/color_constant.dart';
-import 'package:sazikagen/logic/connection.dart';
-import 'package:sazikagen/model/recipe_model.dart';
 
+import '../component/appbar.dart';
+import '../constant/color_constant.dart';
 import '../db/database_helper.dart';
 import '../db/menu_show.dart';
+import '../model/recipe/recipe_model.dart';
 import '../logic/connection.dart';
-import 'home_page.dart';
 
 class Send extends StatefulWidget {
   const Send({Key? key, required this.recipe}) : super(key: key);
@@ -16,7 +15,7 @@ class Send extends StatefulWidget {
   @override
   State<Send> createState() => _SendState();
 
-  final RecipeModel recipe;
+  final Recipe recipe;
 }
 
 class _SendState extends State<Send> {
@@ -25,7 +24,7 @@ class _SendState extends State<Send> {
   List<dynamic> queryRecipe = [];
   List<Map<String, dynamic>> querySeasoning = [];
 
-  late RecipeModel _recipe; // レシピをここに保存
+  late Recipe _recipe; // レシピをここに保存
 
   bool isLodging = false;
 
@@ -86,7 +85,7 @@ class _SendState extends State<Send> {
                   ),
                   Center(
                     child: Text(
-                      _recipe.title,
+                      _recipe.recipe_name,
                       // queryRecipe.length.toString(),
                       style: TextStyle(
                         fontSize: 15,
@@ -203,8 +202,8 @@ class _SendState extends State<Send> {
   // }
 
   recipeTable() async {
-    print('recipeID:${_recipe.recipeId}');
-    List<dynamic> tmpMenu = await getMenu(_recipe.recipeId);
+    print('recipeID:${_recipe.ID}');
+    List<dynamic> tmpMenu = await getMenu(_recipe.ID);
     setState(() {
       queryRecipe = tmpMenu;
     });
@@ -258,7 +257,7 @@ class _SendState extends State<Send> {
         onPressed: () {
           // Navigator.push(
           //     context, MaterialPageRoute(builder: (context) => HomePage()));
-          connection.fetchDataFromRaspberryPi(_recipe.title, seasoningId, seasoningName, tableSpoon, teaSpoon);
+          connection.fetchDataFromRaspberryPi(_recipe.recipe_name, seasoningId, seasoningName, tableSpoon, teaSpoon);
           showDialog<void>(
               barrierDismissible: false,
               context: context,

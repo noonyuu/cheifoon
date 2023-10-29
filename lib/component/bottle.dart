@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
 import 'package:sazikagen/constant/color_constant.dart';
+import 'package:sazikagen/model/user_bottle/user_bottle_model.dart';
 import '../model/bottle_model.dart';
 import 'alert.dart';
 
 class BottleComponent extends StatefulWidget {
-  final BottleModel _bottle;
+  final UserBottle _bottle;
   final Function onDeletePressed; // onDeletePressed をフィールドとして追加
 
   // コンストラクタを修正
   const BottleComponent({
     Key? key,
-    required BottleModel bottle,
+    required UserBottle bottle,
     required this.onDeletePressed, // コンストラクタで onDeletePressed を受け取る
   })  : _bottle = bottle, // _bottle フィールドを初期化
         super(key: key);
@@ -35,8 +36,8 @@ class _BottleComponentState extends State<BottleComponent> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialogs(
-                  bottleTitle: widget._bottle.bottleTitle,
-                  bottleId: widget._bottle.bottleId,
+                  bottleTitle: widget._bottle.seasoning_name,
+                  bottleId: widget._bottle.seasoning_id,
                   onDeletePressed: widget.onDeletePressed,
                 );
               },
@@ -56,8 +57,8 @@ class _BottleComponentState extends State<BottleComponent> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialogs(
-              bottleTitle: widget._bottle.bottleTitle,
-              bottleId: widget._bottle.bottleId,
+              bottleTitle: widget._bottle.seasoning_name,
+              bottleId: widget._bottle.seasoning_id,
               onDeletePressed: widget.onDeletePressed,
             );
           },
@@ -76,15 +77,15 @@ class _BottleComponentState extends State<BottleComponent> {
           ),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: widget._bottle.bottleTitle.length > 4
+        child: widget._bottle.seasoning_name.length > 4
             ? Marquee(
-                text: widget._bottle.bottleTitle,
+                text: widget._bottle.seasoning_name,
                 blankSpace: 20,
                 style: const TextStyle(fontSize: 10),
                 velocity: 10,
               )
             : Text(
-                widget._bottle.bottleTitle,
+                widget._bottle.seasoning_name,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 10),
               ),

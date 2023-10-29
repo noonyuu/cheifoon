@@ -24,9 +24,9 @@ class DatabaseHelper {
   // static const menuImage = 'menu_image';
 
   // 準備され得ている調味料
-  static const adminSeasoningId = 'admin_seasoningId';
-  static const adminSeasoningName = 'admin_seasoningName';
-  static const adminTeaSecond = 'admin_teaSecond';
+  static const adminSeasoningId = 'admin_seasoning_id';
+  static const adminSeasoningName = 'admin_seasoning_name';
+  static const adminTeaSecond = 'admin_tea_second';
 
   // 調味料表
   static const seasoningId = 'seasoning_id';

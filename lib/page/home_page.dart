@@ -1,18 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../model/recipe_model.dart';
-import 'addalert.dart';
-import '../model/rectangle_model.dart';
-import '../model/recipe_model.dart';
-import '../model/bottle_model.dart';
-import '../constant/color_constant.dart';
-import '../db/database_helper.dart';
-import '../controller/recipe_controller.dart';
-import '../controller/bottle_controller.dart';
-import '../component/card.dart';
-import '../component/bottle.dart';
+
 import '../component/appbar.dart';
+import '../component/bottle.dart';
+import '../component/card.dart';
+import '../constant/color_constant.dart';
+import '../controller/admin_bottle_controller.dart';
+import '../controller/recipe_controller.dart';
+import '../controller/user_bottle_controller.dart';
+import '../db/database_helper.dart';
+import '../model/admin_botle/admin_bottle_model.dart';
+import '../model/recipe/recipe_model.dart';
+import '../model/rectangle_model.dart';
+import '../model/user_bottle/user_bottle_model.dart';
+import 'addalert.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,8 +26,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Recipe> _recipePost = []; // レシピデータ
-  List<BottleModel> _bottlePost = []; // 調味料データ
-  List<BottleAdminModel> _bottleAdmin = []; // 用意されてる調味料データ
+  List<UserBottle> _bottlePost = []; // 調味料データ
+  List<AdminBottle> _bottleAdmin = []; // 用意されてる調味料データ
   List<Map<String, dynamic>> _queryResult = [];
   final dbHelper = DatabaseHelper.instance;
 
@@ -227,7 +230,7 @@ class _HomePageState extends State<HomePage> {
               height: 50,
               child: StatefulBuilder(
                 builder: (BuildContext context, StateSetter setState) => Center(
-                  child: DropdownButton<BottleAdminModel>(
+                  child: DropdownButton<AdminBottle>(
                     underline: Container(), //下線なくす
                     value: itemAdmin.selectedBottle,
                     onChanged: (newValue) {
@@ -236,9 +239,9 @@ class _HomePageState extends State<HomePage> {
                       });
                     },
                     items: _bottleAdmin.map((bottle) {
-                      return DropdownMenuItem<BottleAdminModel>(
+                      return DropdownMenuItem<AdminBottle>(
                         value: bottle,
-                        child: Text(bottle.bottleTitle),
+                        child: Text(bottle.admin_seasoning_name),
                       );
                     }).toList(),
                   ),
@@ -257,18 +260,18 @@ class _HomePageState extends State<HomePage> {
                     IconButton(
                       onPressed: () {
                         if (itemAdmin.selectedBottle != null) {
-                          BottleAdminModel selectedBottle = itemAdmin.selectedBottle!;
+                          AdminBottle selectedBottle = itemAdmin.selectedBottle!;
 
-                          BottleModel newBottle = BottleModel(
-                            bottleId: selectedBottle.bottleId,
-                            bottleTitle: selectedBottle.bottleTitle,
-                            teaSecond: selectedBottle.teaSecond,
+                          UserBottle newBottle = UserBottle(
+                            seasoning_id: selectedBottle.admin_seasoning_id,
+                            seasoning_name: selectedBottle.admin_seasoning_name,
+                            tea_second: selectedBottle.admin_tea_second,
                           );
 
                           setState(() {
-                            int id = itemAdmin.selectedBottle!.bottleId;
-                            String name = itemAdmin.selectedBottle!.bottleTitle;
-                            double tea = itemAdmin.selectedBottle!.teaSecond;
+                            int id = itemAdmin.selectedBottle!.admin_seasoning_id;
+                            String name = itemAdmin.selectedBottle!.admin_seasoning_name;
+                            double tea = itemAdmin.selectedBottle!.admin_tea_second;
                             // 調味料を追加
                             _insertSeasoning(id, name, tea);
                             _bottlePost.add(newBottle);

@@ -1,5 +1,5 @@
 import '../db/recipe_show.dart';
-import '../model/recipe_model.dart';
+import '../model/recipe/recipe_model.dart';
 
 class RecipeController {
   static List<dynamic> _recipe = [];    // メニューテーブル

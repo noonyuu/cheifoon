@@ -6,19 +6,17 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:http/src/response.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sazikagen/component/appbar.dart';
 
 import 'package:sazikagen/constant/color_constant.dart';
-import '../../controller/bottle_controller.dart';
-import 'package:sazikagen/model/bottle_model.dart';
+import '../controller/user_bottle_controller.dart';
 import '../db/database_helper.dart';
 import '../db/menu_add.dart';
 import '../db/recipe_add.dart';
 import '../logic/camera.dart';
 import '../model/rectangle_model.dart';
+import '../model/user_bottle/user_bottle_model.dart';
 import 'home_page.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -32,7 +30,7 @@ class Alert extends StatefulWidget {
 
 class _AlertState extends State<Alert> {
   final List<seasoningItem> _rectangleList = []; // 四角形を追加していくためのリスト
-  List<BottleModel> _bottleController = []; // ドロップダウンリストに表示するためのリスト
+  List<UserBottle> _bottleController = []; // ドロップダウンリストに表示するためのリスト
   String _recipeName = ''; // レシピ名を入れるための変数
 
   final dbHelper = DatabaseHelper.instance;
@@ -67,7 +65,7 @@ class _AlertState extends State<Alert> {
               color: ColorConst.recipename,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
-                side: BorderSide(width: 0.50),
+                side: const BorderSide(width: 0.50),
               ),
             ),
           ),
@@ -93,7 +91,7 @@ class _AlertState extends State<Alert> {
                       _rectangleList.removeAt(index);
                     });
                   },
-                  child: FaIcon(
+                  child: const FaIcon(
                     FontAwesomeIcons.trash,
                     color: ColorConst.red,
                     size: 20.0, // 任意のサイズを指定
@@ -144,8 +142,8 @@ class _AlertState extends State<Alert> {
                   fit: BoxFit.cover,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(2.0),
+              const Padding(
+                padding: EdgeInsets.all(2.0),
                 child: Text(
                   '戻る',
                   textAlign: TextAlign.left,
@@ -184,8 +182,8 @@ class _AlertState extends State<Alert> {
                   fit: BoxFit.cover,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(2.0),
+              const Padding(
+                padding: EdgeInsets.all(2.0),
                 child: Text(
                   '追加',
                   textAlign: TextAlign.left,
@@ -198,7 +196,7 @@ class _AlertState extends State<Alert> {
   }
 
   Widget _Dropdown(seasoningItem recipeItem) {
-    return DropdownButton<BottleModel>(
+    return DropdownButton<UserBottle>(
       value: recipeItem.selectedBottle,
       onChanged: (newValue) {
         setState(() {
@@ -206,9 +204,9 @@ class _AlertState extends State<Alert> {
         });
       },
       items: _bottleController.map((bottle) {
-        return DropdownMenuItem<BottleModel>(
+        return DropdownMenuItem<UserBottle>(
           value: bottle,
-          child: Text(bottle.bottleTitle),
+          child: Text(bottle.seasoning_name),
         );
       }).toList(),
     );
@@ -231,23 +229,28 @@ class _AlertState extends State<Alert> {
             ? () async {
                 // TODO: user_idを変更する
                 try {
-                  String imageFile = imagePaths.getFilePath();
-                  File file = File(imageFile);
+                  File file = File(imagePaths.getFilePath());
+                  print("eeeee${file}");
+                  print(_recipeName);
                   // List<int> bytes = await file.readAsBytes();
-                  
+
                   // final directory = await getApplicationDocumentsDirectory();
                   // File newFile = File('${directory.path}/11.jpg');
                   // await newFile.writeAsBytes(bytes);
 
                   // print('imagefile${bytes}');
-                  Uint8List? uint8List = await file.readAsBytes();
-                  print(uint8List);
-                  String id = await postRecipe(1, _recipeName, uint8List);
-                  int recipeId = int.parse(id);
-                  print(recipeId);
+                  // Uint8List? uint8List = await file.readAsBytes();
+                  // print(uint8List);
+                  print("通過1");
+                  // await postRecipe(1, _recipeName, file);
+                  int recipeId = await postRecipe(1, _recipeName, file);
+                  print("通過2");
+                  // int recipeId = int.parse(id);
+                  print("通過3");
+                  // print(recipeId);
                   List<Map<String, dynamic>> menu = [];
                   _rectangleList.forEach((item) {
-                    int? i = item.selectedBottle?.bottleId ?? 0;
+                    int? i = item.selectedBottle?.seasoning_id ?? 0;
                     menu.add({"recipe_id": recipeId, "user_id": 1, "seasoning_id": i, "table_spoon": item.tableSpoon - 1, "tea_spoon": item.teaSpoon - 1});
                   });
                   print('Menu Contents: $menu');
@@ -272,8 +275,8 @@ class _AlertState extends State<Alert> {
                   fit: BoxFit.cover,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(2.0),
+              const Padding(
+                padding: EdgeInsets.all(2.0),
                 child: Text(
                   '決定',
                   textAlign: TextAlign.left,
@@ -317,7 +320,7 @@ class _AlertState extends State<Alert> {
                     // color: Colors.amber,
                     borderRadius: BorderRadius.circular(24.0), // 角の丸みを設定
                   ),
-                  child: imagePaths.getFilePath().isNotEmpty ? Image.file(File(imagePaths.getFilePath())) : Icon(Icons.camera_alt_outlined, size: 50, color: ColorConst.mainColor),
+                  child: imagePaths.getFilePath().isNotEmpty ? Image.file(File(imagePaths.getFilePath())) : const Icon(Icons.camera_alt_outlined, size: 50, color: ColorConst.mainColor),
                 )),
           ),
         ),
@@ -331,7 +334,7 @@ class _AlertState extends State<Alert> {
       child: Scaffold(
         // 全体画面
         backgroundColor: ColorConst.background,
-        appBar: AppBarComponentWidget(
+        appBar: const AppBarComponentWidget(
           isInfoIconEnabled: false,
         ),
         body: SingleChildScrollView(
@@ -351,10 +354,10 @@ class _AlertState extends State<Alert> {
                       height: MediaQuery.of(context).size.height * 0.07,
                       width: MediaQuery.of(context).size.width * 0.75,
                       decoration: ShapeDecoration(
-                        color: Color(0xFFFFEDAE),
+                        color: const Color(0xFFFFEDAE),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
-                          side: BorderSide(width: 0.50),
+                          side: const BorderSide(width: 0.50),
                         ),
                       ),
                     ),
@@ -375,7 +378,7 @@ class _AlertState extends State<Alert> {
                           },
                           // 入力できる形にする
                           textAlign: TextAlign.center, // テキストを真ん中にする
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             border: InputBorder.none, // 枠線を消す
                             // placeholderみたいなやつ
                             hintText: 'レシピ名',
@@ -440,7 +443,7 @@ class _AlertState extends State<Alert> {
               height: MediaQuery.of(context).size.height * 0.055,
               child: NumberPicker(
                 value: recipeItem.tableSpoon, // 値を個別に持たせるために各インスタンスから
-                decoration: BoxDecoration(),
+                decoration: const BoxDecoration(),
                 minValue: 0,
                 maxValue: 5,
                 infiniteLoop: true, // 0 ~ 5しか表示されない
