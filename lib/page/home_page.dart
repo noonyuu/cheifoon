@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../model/recipe_model.dart';
 import 'addalert.dart';
 import '../model/rectangle_model.dart';
 import '../model/recipe_model.dart';
@@ -22,13 +22,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<RecipeModel> _recipePost = [];   // レシピデータ
-  List<BottleModel> _bottlePost = [];   // 調味料データ
+  List<Recipe> _recipePost = []; // レシピデータ
+  List<BottleModel> _bottlePost = []; // 調味料データ
   List<BottleAdminModel> _bottleAdmin = []; // 用意されてる調味料データ
   List<Map<String, dynamic>> _queryResult = [];
   final dbHelper = DatabaseHelper.instance;
 
-  bool isMenuLading = true;   // レシピデータ取得中のフラグ
+  bool isMenuLading = true; // レシピデータ取得中のフラグ
   bool isBottleLading = true; // 調味料データ取得中のフラグ
 
   @override
@@ -70,18 +70,19 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     if (isMenuLading && isBottleLading) {
-      return Center(
-          // プログレスインディケーターの表示
-          child: SizedBox(
-        height: 50,
-        width: 50,
-        child: CircularProgressIndicator(),
-      ));
+      return const Center(
+        // プログレスインディケーターの表示
+        child: SizedBox(
+          height: 50,
+          width: 50,
+          child: CircularProgressIndicator(),
+        ),
+      );
     } else {
       return SafeArea(
         child: Scaffold(
             backgroundColor: ColorConst.background,
-            appBar: AppBarComponentWidget(
+            appBar: const AppBarComponentWidget(
               isInfoIconEnabled: true,
             ),
             body: RefreshIndicator(
@@ -128,9 +129,9 @@ class _HomePageState extends State<HomePage> {
                     heroTag: "btn1",
                     backgroundColor: ColorConst.mainColor,
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Alert()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const Alert()));
                     },
-                    child: Icon(Icons.add),
+                    child: const Icon(Icons.add),
                   ), // ボタン間にスペースを空けるための SizedBox
                 ],
               ),
@@ -158,13 +159,13 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               children: [
                 IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.add_circle_outline,
                     ),
                     onPressed: () {
                       _alertDropdown(itemAdmin);
                     }),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Expanded(
@@ -209,7 +210,7 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: ColorConst.background,
-          title: Column(
+          title: const Column(
             children: [
               Text(
                 '調味料を選択',

@@ -1,20 +1,16 @@
-import 'dart:typed_data';
-
-import 'package:flutter/material.dart';
-
-import '../db/database_helper.dart';
 import '../db/recipe_show.dart';
-import '../model/recipe_model.dart';
+import '../model/recipe.dart';
 
 class RecipeController {
-  static List<dynamic> _recipe = []; // メニューテーブル
-  static final List<RecipeModel> _menu = []; // メニュー
+  static List<dynamic> _recipe = [];    // メニューテーブル
+  static final List<Recipe> _menu = []; // メニュー
 
-  static Future<List<RecipeModel>> menuList() async {
+  static Future<List<Recipe>> menuList() async {
     // 初期化
     _recipe.clear();
     _menu.clear();
     // レシピデータの取得
+    // TODO: UserIDを引数にする
     _recipe = await getRecipe(1);
     // メニューデータの取得
     await _initializeRecipe();
@@ -23,13 +19,8 @@ class RecipeController {
 
 // メニューデータの取得
   static Future<void> _initializeRecipe() async {
-    for (var row in _recipe) {
-      _menu.add(RecipeModel(
-        recipeId: row['ID'],
-        userId: row['user_id'],
-        title: row['recipe_name'],
-        imagePath: row['menu_image'],
-      ));
-    }
+    _recipe.forEach((user) {
+      _menu.add(Recipe.fromJson(user));
+    });
   }
 }
