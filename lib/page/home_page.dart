@@ -25,14 +25,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Recipe> _recipePost = []; // レシピデータ
-  List<UserBottle> _bottlePost = []; // 調味料データ
-  List<AdminBottle> _bottleAdmin = []; // 用意されてる調味料データ
-  List<Map<String, dynamic>> _queryResult = [];
-  final dbHelper = DatabaseHelper.instance;
+  List<Recipe> _recipePost = [];            // レシピデータ
+  List<UserBottle> _bottlePost = [];        // 調味料データ
+  List<AdminBottle> _bottleAdmin = [];      // 用意されてる調味料データ
+  final dbHelper = DatabaseHelper.instance; // DBヘルパー
 
-  bool isMenuLading = true; // レシピデータ取得中のフラグ
-  bool isBottleLading = true; // 調味料データ取得中のフラグ
+  bool isMenuLading = true;                 // レシピデータ取得中のフラグ
+  bool isBottleLading = true;               // 調味料データ取得中のフラグ
 
   @override
   void initState() {
@@ -50,22 +49,22 @@ class _HomePageState extends State<HomePage> {
       isMenuLading = true;
       isBottleLading = true;
     });
+    // レシピデータを取得
     await RecipeController.menuList().then((menuList) {
       setState(() {
         _recipePost = menuList;
         isMenuLading = false;
       });
-    }); // RecipeControllerからデータを取得
+    }); // ユーザーがセットした調味料を取得
     await BottleController.bottleList().then((bottleList) {
       setState(() {
         _bottlePost = bottleList;
         isBottleLading = false;
       });
-    }); // BottleControllerからデータを取得
+    }); // 用意されてる調味料を取得
     await BottleAdminController.bottleList().then((bottleList) {
       setState(() {
         _bottleAdmin = bottleList;
-        // isBottleLading = false;
       });
     });
   }

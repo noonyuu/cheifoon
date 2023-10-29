@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
 import 'package:sazikagen/constant/color_constant.dart';
 import 'package:sazikagen/model/user_bottle/user_bottle_model.dart';
-import '../model/bottle_model.dart';
+
 import 'alert.dart';
 
 class BottleComponent extends StatefulWidget {

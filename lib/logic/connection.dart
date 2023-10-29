@@ -6,7 +6,7 @@ class connection {
     String seasoningInfo = '';
     for (int i = 0; i < seasoningName.length; i++) {
       if (tableSpoon[i] != "0") {
-        seasoningInfo += '${seasoningName[i]},1,${tableSpoon[i]}';
+        seasoningInfo += '${seasoningName[i]},1,${tableSpoon[i]},';
       }
       if (teaSpoon[i] != "0") {
         seasoningInfo += '${seasoningName[i]},0,${teaSpoon[i]}';
@@ -15,9 +15,11 @@ class connection {
       // seasoningInfo += '${seasoningName[i]},1,${tableSpoon[i]},0,${teaSpoon[i]}';
       if (i != seasoningName.length - 1) {
         seasoningInfo += ',';
+        print("w");
       }
     }
     String date = '$menuName,$seasoningInfo';
+    print(date);
     // String date = 'カレー,醤油,0,1,ウスターソース,1,1';
 
     // final socket = await Socket.connect('192.168.179.49', 8081);

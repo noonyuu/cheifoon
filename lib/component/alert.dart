@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import '../db/database_helper.dart';
 
 class AlertDialogs extends StatelessWidget {
-  final String bottleTitle; // bottleTitle をフィールドとして追加
-  final int bottleId; // bottleId をフィールドとして追加
-  final Function onDeletePressed; // onDeletePressed をフィールドとして追加
+  final String bottleTitle;         // bottleTitleフィールド
+  final int bottleId;               // bottleIdフィールド
+  final Function onDeletePressed;   // onDeletePressedフィールド
 
-  const AlertDialogs({
-    required this.bottleTitle, // コンストラクタで bottleTitle を受け取る
-    required this.bottleId, // コンストラクタで bottleId を受け取る
-    required this.onDeletePressed, // コンストラクタで onDeletePressed を受け取る
+  const AlertDialogs({  
+    required this.bottleTitle,
+    required this.bottleId,
+    required this.onDeletePressed,
     Key? key,
   }) : super(key: key);
 
@@ -19,10 +19,10 @@ class AlertDialogs extends StatelessWidget {
     return AlertDialog(
       title: Text('$bottleTitleを削除します',
           textAlign: TextAlign.center, // テキストを中央揃え
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
           )),
-      content: Column(
+      content: const Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
@@ -39,7 +39,7 @@ class AlertDialogs extends StatelessWidget {
       ),
       actions: <Widget>[
         GestureDetector(
-          child: Text('いいえ'),
+          child: const Text('いいえ'),
           onTap: () {
             Navigator.pop(context);
           },
@@ -47,7 +47,7 @@ class AlertDialogs extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
           child: GestureDetector(
-            child: Text(
+            child: const Text(
               'はい',
               style: TextStyle(
                 color: Colors.red,
