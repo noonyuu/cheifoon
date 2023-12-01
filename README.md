@@ -1,16 +1,23 @@
-# sazikagen
+# さじ加減
 
-A new Flutter project.
+『さじ加減』は料理中に調味料を測る工程を無くして料理をもっと簡単にするためのお助けアイテムです。スマホと連動し、調理中に操作なく利用できます。また、タッチパネルで直に操作することもでき味付けの微調整も可能です。
 
-## Getting Started
+## 一言
 
-This project is a starting point for a Flutter application.
+時間がなくてクソコードになってます
 
-A few resources to get you started if this is your first Flutter project:
+### 　リンク
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- [プレゼンテーション](https://www.canva.com/design/DAFsMo8NZEQ/H6pif97hRnCzPIYyyxmzRg/editb)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+223
+当チームは、専門学校の同級生6人で結成しました。
+チーム構成(メイン担当)
+リーダー
+道上康介:機械担当(機構制作)
+以下メンバー
+本杉昂大:機械担当(3Dプリンター)
+上坂竜哉:機械担当(Raspberry Pi制御)、通信処理(web socket)
+清水勇太郎:スマホアプリ担当、通信処理(web socket)
+新川悠生:スマホアプリ担当
+片山美結:スマホアプリ担当 
