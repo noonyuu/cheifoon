@@ -1,27 +1,15 @@
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:flutter/services.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static const _databaseName = "cheifoon.db"; // データベース名
   static const _databaseVersion = 1; // スキーマのバージョン指定
 
-  // static const recipeTable = 'recipe'; // レシピテーブル
-  // static const menuTable = 'menu'; // メニューテーブル名
   static const seasoningTable = 'seasoning'; // 調味料テーブル名
   static const adminSeasoning = 'admin_seasoning'; // 準備され得ている調味料
-
-  // // レシピ表
-  // static const tableSpoon = 'table_spoon';
-  // static const teaSpoon = 'tea_spoon';
-  //   // メニュー表
-  // static const menuId = 'menu_id';
-  // static const menuName = 'menu_name';
-  // static const menuImage = 'menu_image';
 
   // 準備され得ている調味料
   static const adminSeasoningId = 'admin_seasoning_id';
@@ -62,10 +50,6 @@ class DatabaseHelper {
       },
       onCreate: _onCreate,
     );
-
-    // PRAGMA文を実行する代わりにrawQueryを使用
-    await db.rawQuery('PRAGMA max_page_count = 2147483646;');
-
     return db;
   }
 
@@ -92,70 +76,24 @@ class DatabaseHelper {
         $adminSeasoningId INTEGER,
         FOREIGN KEY ($adminSeasoningId) REFERENCES $adminSeasoning($adminSeasoningId)
       )''');
-      // メニューテーブル
-      // await db.execute('''CREATE TABLE $menuTable (
-      //   $menuId INTEGER PRIMARY KEY AUTOINCREMENT,
-      //   $menuName TEXT NOT NULL,
-      //   $menuImage BLOB NOT NULL
-      // )''');
-      // レシピテーブル
-      // await db.execute('''CREATE TABLE $recipeTable (
-      //   $menuId INTEGER,
-      //   $seasoningId INTEGER,
-      //   $tableSpoon INTEGER DEFAULT 0,
-      //   $teaSpoon INTEGER DEFAULT 0,
-      //   PRIMARY KEY ($menuId, $seasoningId),
-      //   FOREIGN KEY ($menuId) REFERENCES $menuTable ($menuId),
-      //   FOREIGN KEY ($seasoningId) REFERENCES $seasoningTable ($seasoningId)
-      // )''');
-      // TODO: テストデータ
-      // Uint8List curry = (await rootBundle.load('assets/images/recipe/sample/curry.png')).buffer.asUint8List();
-      // Uint8List OmeletteRice = (await rootBundle.load('assets/images/recipe/sample/OmeletteRice.png')).buffer.asUint8List();
-      // await db.rawInsert('''INSERT INTO $menuTable ($menuName, $menuImage) VALUES (?, ?)''', ['カレー', curry]);
-      // await db.rawInsert('''INSERT INTO $menuTable ($menuName, $menuImage) VALUES (?, ?)''', ['オムライス', OmeletteRice]);
-
-      // await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES (?,?,?,?)''', [1, 1, 0, 1]);
-      // await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES (?,?,?,?)''', [1, 4, 1, 0]); // カレー,醤油,0,1,ウスターソース,1,1
-      // await db.execute('''INSERT INTO $recipeTable ($menuId, $seasoningId,$tableSpoon,$teaSpoon) VALUES(?,?,?,?)''', [2, 4, 0, 2]);
     } catch (e) {
       print('エラー：$e');
     }
     print('finish');
   }
 
-// menuTable
-  // Future<int> insertMenu(Map<String, dynamic> row) async {
+  // Future<List<Map<String, dynamic>>> querySeasoning() async {
   //   Database? db = await instance.database;
-  //   return await db!.insert(menuTable, row);
+  //   return await db!.query(seasoningTable);
   // }
 
-// recipeTable
-  // Future<int> insertRecipe(Map<String, dynamic> row) async {
-  //   Database? db = await instance.database;
-  //   return await db!.insert(recipeTable, row);
-  // }
-
-  // Future<int> insert(Map<String, dynamic> row) async {
-  //   Database? db = await instance.database;
-  //   return await db!.insert(menuTable, row);
-  // }
-
-  Future<List<Map<String, dynamic>>> queryAllRows() async {
-    Database? db = await instance.database;
-    return await db!.query(seasoningTable);
-  }
-
-// menuTableの全レコードを取得
-  // Future<List<Map<String, dynamic>>> queryMenuTable() async {
-  //   Database? db = await instance.database;
-  //   return await db!.query(menuTable);
-  // }
-
+  // 登録されている調味料を全取得
   Future<List<Map<String, dynamic>>> queryAdminSeasoningTable() async {
     Database? db = await instance.database;
     return await db!.query(adminSeasoning);
   }
 
+  // 調味料テーブルを全取得
   Future<List<Map<String, dynamic>>> querySeasoningTable() async {
     Database? db = await instance.database;
     return await db!.query(seasoningTable);
@@ -167,12 +105,6 @@ class DatabaseHelper {
     SELECT seasoning_name FROM $seasoningTable WHERE seasoning_id = $id
     ''');
   }
-
-  // test data
-  // Future<int> inserta(Map<String, dynamic> row) async {
-  //   Database? db = await instance.database;
-  //   return await db!.insert(menuTable, row);
-  // }
 
   Future<int> insertb(Map<String, dynamic> row) async {
     Database? db = await instance.database;
@@ -193,51 +125,6 @@ class DatabaseHelper {
     // 削除された行のIDを保存するリスト
     List<int> deletedIds = [];
   }
-
-// データベースから削除する行を取得する
-  //   List<Map<String, dynamic>> rowsToDelete = await db.query(recipeTable, where: '$seasoningId = ?', whereArgs: [bottleId]);
-
-  //   if (rowsToDelete.isNotEmpty) {
-  //     for (final row in rowsToDelete) {
-  //       int id = row[menuId];
-  //       deletedIds.add(id); // 削除された行のIDをリストに追加
-  //     }
-  //     // データベースから指定したIDの行を削除
-  //     await db.delete(recipeTable, where: '$seasoningId = ?', whereArgs: [bottleId]);
-  //     for (int i = 0; i < deletedIds.length; i++) {
-  //       await db.delete(menuTable, where: '$menuId = ?', whereArgs: [deletedIds[i]]);
-  //     }
-  //   }
-  // }
-
-  // Future<List<Map<String, dynamic>>> queryRecipe() async {
-  //   Database? db = await instance.database;
-  //   return await db!.query(recipeTable);
-  // }
-
-// menutableの最後に追加されたデータを取得
-  // Future<Map<String, dynamic>?> getMaxMenuIdRecord() async {
-  //   Database? db = await instance.database;
-  //   List<Map<String, dynamic>> results = await db!.rawQuery('''
-  //   SELECT MAX($menuId) as count FROM $menuTable
-  // ''');
-  //   if (results.isNotEmpty) {
-  //     return results.first;
-  //   }
-  //   return null;
-  // }
-
-  // menuTable 引数のidを条件にレコードを取得
-  // Future<List<Map<String, dynamic>>> getRecipeInfo(row) async {
-  //   Database? db = await instance.database;
-  //   List<Map<String, dynamic>> results = await db!.rawQuery('''
-  //   SELECT * FROM $recipeTable WHERE $menuId = $row
-  // ''');
-  //   if (results.isNotEmpty) {
-  //     return results;
-  //   }
-  //   return [];
-  // }
 
   // seasoningですでに追加されてるか確認
   Future<List<Map<String, dynamic>>> getSeasoningInfo() async {

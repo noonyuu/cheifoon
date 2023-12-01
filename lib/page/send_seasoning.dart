@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../component/app_bar.dart';
 import '../component/spoon_button.dart';
 import '../constant/color_constant.dart';
+import '../constant/layout.dart';
 import '../db/database_helper.dart';
 import '../db/menu_show.dart';
 import '../model/recipe/recipe_model.dart';
@@ -33,7 +32,7 @@ class _SendState extends State<Send> {
   List<String> seasoningId = [];
   List<String> tableSpoon = [];
   List<String> teaSpoon = [];
-
+  late SizeConfig sizeConfig;
   @override
   void initState() {
     _recipe = widget.recipe;
@@ -51,6 +50,8 @@ class _SendState extends State<Send> {
 
   @override
   Widget build(BuildContext context) {
+    sizeConfig = SizeConfig();
+    sizeConfig.init(context);
     if (!isLodging) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -58,8 +59,13 @@ class _SendState extends State<Send> {
     } else {
       return SafeArea(
         child: Scaffold(
-          appBar: const AppBarComponentWidget(
-            isInfoIconEnabled: false,
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(sizeConfig.screenHeight * 0.05),
+            child: AppBarComponentWidget(
+              title: 'Cheifoon',
+              isInfoIconEnabled: true,
+              context: context,
+            ),
           ),
           // 全体画面
           backgroundColor: ColorConst.background,

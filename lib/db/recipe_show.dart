@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
-import 'endPoint.dart';
+import 'end_point.dart';
 
 Future<List<dynamic>> getRecipe(int id) async {
   // TODO: UserIDを引数にする
-  Uri url = Uri.parse('http://${get_end_point()}:8081/recipe/view/1');
+  Uri url = Uri.parse('http://${getEndPoint()}:8081/recipe/view/1');
   final response = await http.get(
     url,
     headers: <String, String>{
@@ -27,7 +27,7 @@ Future<List<dynamic>> getRecipe(int id) async {
       item['menu_image'] = responseData[i]['menu_image'];
 
       // recipe_imageの取得
-      final imageUrl = Uri.parse('http://${get_end_point()}:8081/getImage/${Uri.encodeFull('${item['menu_image']}')}');
+      final imageUrl = Uri.parse('http://${getEndPoint()}:8081/getImage/${Uri.encodeFull('${item['menu_image']}')}');
       final responseImage = await http.get(imageUrl);
       // 画像データの取得
       final Uint8List imageData = responseImage.bodyBytes;

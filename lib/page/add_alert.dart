@@ -1,15 +1,17 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:sazikagen/component/app_bar.dart';
 
-import 'package:sazikagen/constant/color_constant.dart';
+import '../component/app_bar.dart';
+import '../constant/color_constant.dart';
+import '../constant/layout.dart';
 import '../controller/user_bottle_controller.dart';
 import '../db/database_helper.dart';
 import '../db/menu_add.dart';
@@ -17,9 +19,7 @@ import '../db/recipe_add.dart';
 import '../logic/camera.dart';
 import '../model/rectangle_model.dart';
 import '../model/user_bottle/user_bottle_model.dart';
-import 'home_page.dart';
-
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'branch_point.dart';
 
 class Alert extends StatefulWidget {
   const Alert({Key? key}) : super(key: key);
@@ -29,7 +29,7 @@ class Alert extends StatefulWidget {
 }
 
 class _AlertState extends State<Alert> {
-  final List<seasoningItem> _rectangleList = []; // 四角形を追加していくためのリスト
+  final List<SeasoningItem> _rectangleList = []; // 四角形を追加していくためのリスト
   List<UserBottle> _bottleController = []; // ドロップダウンリストに表示するためのリスト
   String _recipeName = ''; // レシピ名を入れるための変数
 
@@ -37,6 +37,11 @@ class _AlertState extends State<Alert> {
 
   late List<CameraDescription> cameras;
   int count = 0;
+
+  SizeConfig sizeConfig = SizeConfig();
+
+  XFile? image;
+  final imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -50,27 +55,54 @@ class _AlertState extends State<Alert> {
     _bottleController = BottleController.bottleLists;
   }
 
-  Widget _buildRectangle(seasoningItem recipeItem, int index) {
+  // ギャラリーから写真を取得するメソッド
+  Future getImageFromGarally() async {
+    try {
+      final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        if (pickedFile != null) {
+          image = XFile(pickedFile.path);
+          imagePaths.setFilePath(image!.path);
+        }
+      });
+    } catch (e) {
+      print('error${e}');
+    }
+  }
+
+  Widget _buildRectangle(SeasoningItem recipeItem, int index) {
+    sizeConfig.init(context);
     bool isBottleSelected = recipeItem.selectedBottle != null;
 
     return Stack(
       alignment: Alignment.center,
       children: [
+        // Padding(
+        //   padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+        //   child: Container(
+        //     width: MediaQuery.of(context).size.width * 0.8,
+        //     height: MediaQuery.of(context).size.height * 0.15,
+        //     decoration: ShapeDecoration(
+        //       color: ColorConst.recipename,
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(10.0),
+        //         side: const BorderSide(width: 0.50),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         Padding(
           padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-          child: Container(
+          child: SizedBox(
             width: MediaQuery.of(context).size.width * 0.8,
             height: MediaQuery.of(context).size.height * 0.15,
-            decoration: ShapeDecoration(
-              color: ColorConst.recipename,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                side: const BorderSide(width: 0.50),
-              ),
-            ),
+            // child: Image.asset(
+            //   'assets/images/board.png',
+            //   fit: BoxFit.fill,
+            // ),
           ),
         ),
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width * 0.8,
           height: MediaQuery.of(context).size.height * 0.15,
           child: Row(
@@ -78,7 +110,7 @@ class _AlertState extends State<Alert> {
             children: [
               _Dropdown(recipeItem), // ドロップダウンリスト(調味料)
               if (isBottleSelected) // 調味料が選択されている時はナンバーピッカーを表示。選択されてなかったら表示されない
-                Container(
+                SizedBox(
                   width: MediaQuery.of(context).size.width * 0.25,
                   height: MediaQuery.of(context).size.height * 0.13,
                   child: numPicker(recipeItem),
@@ -130,7 +162,7 @@ class _AlertState extends State<Alert> {
           imagePaths.setFilePath('');
           Navigator.pop(context, true);
         },
-        child: Container(
+        child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.15,
           height: MediaQuery.of(context).size.height * 0.04,
           child: Stack(
@@ -166,10 +198,10 @@ class _AlertState extends State<Alert> {
           if (count == 0) return;
 
           setState(() {
-            _rectangleList.add(seasoningItem());
+            _rectangleList.add(SeasoningItem());
           });
         },
-        child: Container(
+        child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.15,
           height: MediaQuery.of(context).size.height * 0.04,
           child: Stack(
@@ -195,7 +227,7 @@ class _AlertState extends State<Alert> {
         ));
   }
 
-  Widget _Dropdown(seasoningItem recipeItem) {
+  Widget _Dropdown(SeasoningItem recipeItem) {
     return DropdownButton<UserBottle>(
       value: recipeItem.selectedBottle,
       onChanged: (newValue) {
@@ -230,39 +262,24 @@ class _AlertState extends State<Alert> {
                 // TODO: user_idを変更する
                 try {
                   File file = File(imagePaths.getFilePath());
-                  print("eeeee${file}");
-                  print(_recipeName);
-                  // List<int> bytes = await file.readAsBytes();
-
-                  // final directory = await getApplicationDocumentsDirectory();
-                  // File newFile = File('${directory.path}/11.jpg');
-                  // await newFile.writeAsBytes(bytes);
-
-                  // print('imagefile${bytes}');
-                  // Uint8List? uint8List = await file.readAsBytes();
-                  // print(uint8List);
-                  print("通過1");
-                  // await postRecipe(1, _recipeName, file);
                   int recipeId = await postRecipe(1, _recipeName, file);
-                  print("通過2");
-                  // int recipeId = int.parse(id);
-                  print("通過3");
-                  // print(recipeId);
                   List<Map<String, dynamic>> menu = [];
-                  _rectangleList.forEach((item) {
+                  for (var item in _rectangleList) {
                     int? i = item.selectedBottle?.seasoning_id ?? 0;
                     menu.add({"recipe_id": recipeId, "user_id": 1, "seasoning_id": i, "table_spoon": item.tableSpoon - 1, "tea_spoon": item.teaSpoon - 1});
-                  });
+                  }
                   print('Menu Contents: $menu');
-                  await postMenu(menu);
-                  imagePaths.setFilePath('');
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                  await postMenu(menu)
+                      .then((value) => imagePaths.setFilePath(''))
+                      .then((value) => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const BranchPoint())));
                 } catch (e) {
-                  print(e);
+                  if (kDebugMode) {
+                    print(e);
+                  }
                 }
               }
             : null,
-        child: Container(
+        child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.15,
           height: MediaQuery.of(context).size.height * 0.04,
           child: Stack(
@@ -290,55 +307,79 @@ class _AlertState extends State<Alert> {
 
 // TODO:カメラ画面の表示
   Widget _camera() {
+    double cameraSize = MediaQuery.of(context).size.width * 0.3; // 正方形にするために値は固定した
+
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.2,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Camera(
-                              camera: cameras.first,
-                            )),
-                  ).then((value) {
-                    setState(() {});
-                  });
-                },
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: ColorConst.mainColor, // 枠線の色
-                      width: 5.0, // 枠線の幅
+      child: Column(
+        children: [
+          SizedBox(
+            // height: MediaQuery.of(context).size.height * 0.2,
+            width: cameraSize,
+            height: cameraSize,
+            // child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Camera(
+                                camera: cameras.first,
+                              )),
+                    ).then((value) {
+                      setState(() {});
+                    });
+                  },
+                  child: Container(
+                    // height: MediaQuery.of(context).size.height * 0.3,
+                    height: cameraSize,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: ColorConst.mainColor, // 枠線の色
+                        width: 5.0, // 枠線の幅
+                      ),
+                      // color: Colors.amber,
+                      // borderRadius: BorderRadius.circular(24.0), // 角の丸みを設定
                     ),
-                    // color: Colors.amber,
-                    borderRadius: BorderRadius.circular(24.0), // 角の丸みを設定
-                  ),
-                  child: imagePaths.getFilePath().isNotEmpty ? Image.file(File(imagePaths.getFilePath())) : const Icon(Icons.camera_alt_outlined, size: 50, color: ColorConst.mainColor),
-                )),
+                    child: imagePaths.getFilePath().isNotEmpty ? Image.file(File(imagePaths.getFilePath())) : const Icon(Icons.camera_alt_outlined, size: 50),
+                  )),
+            ),
+            // ),
           ),
-        ),
+          GestureDetector(
+            onTap: getImageFromGarally,
+            child: Container(
+              width: cameraSize,
+              height: cameraSize * 0.2,
+              color: ColorConst.mainColor,
+              child: const Center(child: Text("フォルダから選択")),
+            ),
+          )
+        ],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    sizeConfig.init(context);
     return SafeArea(
       child: Scaffold(
         // 全体画面
         backgroundColor: ColorConst.background,
-        appBar: const AppBarComponentWidget(
-          isInfoIconEnabled: false,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(sizeConfig.screenHeight * 0.05),
+          child: AppBarComponentWidget(
+            title: 'Cheifoon',
+            isInfoIconEnabled: true,
+            context: context,
+          ),
         ),
         body: SingleChildScrollView(
-          child: Container(
+          child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.8,
             child: Column(
               children: [
@@ -346,58 +387,95 @@ class _AlertState extends State<Alert> {
                   // 検索バーの上に隙間入れるためのやつ
                   height: 30,
                 ),
-                Stack(
-                  alignment: Alignment.center, // 検索バー背景を真ん中に持ってくる
+                const Text(
+                  "レシピ追加",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    // color: newColorConst.mainColor,
+                  ),
+                ),
+                const SizedBox(
+                  // 検索バーの上に隙間入れるためのやつ
+                  height: 30,
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      // 検索バーの背景の四角形
-                      height: MediaQuery.of(context).size.height * 0.07,
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      decoration: ShapeDecoration(
-                        color: const Color(0xFFFFEDAE),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          side: const BorderSide(width: 0.50),
-                        ),
-                      ),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        _camera(), // ここで直接 _camera() を呼び出す
+                      ],
                     ),
-                    Center(
-                      // 検索バーを真ん中に持ってくる
-                      child: Container(
-                        // 検索バー
-                        child: TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              count++;
-                            });
-                            // 入力された値を取得
-                            _recipeName = value;
-                            if (count == 1) {
-                              _rectangleList.add(seasoningItem()); // 初期状態で一つの四角形を追加
-                            }
-                          },
-                          // 入力できる形にする
-                          textAlign: TextAlign.center, // テキストを真ん中にする
-                          decoration: const InputDecoration(
-                            border: InputBorder.none, // 枠線を消す
-                            // placeholderみたいなやつ
-                            hintText: 'レシピ名',
-                            hintStyle: TextStyle(color: Colors.grey),
+                    Stack(
+                      alignment: Alignment.center, // 検索バー背景を真ん中に持ってくる
+                      children: [
+                        // Container(
+                        //   // 検索バーの背景の四角形
+                        //   height: MediaQuery.of(context).size.height * 0.07,
+                        //   width: MediaQuery.of(context).size.width * 0.75,
+                        //   decoration: ShapeDecoration(
+                        //     color: const Color(0xFFFFEDAE),
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(10.0),
+                        //       side: const BorderSide(width: 0.50),
+                        //     ),
+                        //   ),
+                        // ),
+                        Container(
+                          height: MediaQuery.of(context).size.height * 0.07,
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                // color: newColorConst.mainColor, // 下線色
+                                width: 2.0, // 下線の太さ
+                              ),
+                            ),
                           ),
-                          keyboardType: TextInputType.text, // キーボードの形を決める
                         ),
-                      ),
+                        Center(
+                          // 検索バーを真ん中に持ってくる
+                          child: SizedBox(
+                            // 検索バー
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: TextField(
+                              onChanged: (value) {
+                                setState(() {
+                                  count++;
+                                });
+                                // 入力された値を取得
+                                _recipeName = value;
+                                if (count == 1) {
+                                  _rectangleList.add(SeasoningItem()); // 初期状態で一つの四角形を追加
+                                }
+                              },
+                              // 入力できる形にする
+                              textAlign: TextAlign.center, // テキストを真ん中にする
+                              decoration: const InputDecoration(
+                                border: InputBorder.none, // 枠線を消す
+                                // placeholderみたいなやつ
+                                hintText: 'レシピ名',
+                                hintStyle: TextStyle(color: Colors.grey),
+                              ),
+                              keyboardType: TextInputType.text, // キーボードの形を決める
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
                 // camera
                 // TODO:カメラ画面の表示
-                count > 0 ? _camera() : Container(),
+                // count > 0 ? _camera() : Container(),
 
-                const SizedBox(
-                  // 検索バーと調味料の間に隙間入れるために設置
-                  height: 30,
-                ),
+                // const SizedBox(
+                //   // 検索バーと調味料の間に隙間入れるために設置
+                //   height: 30,
+                // ),
                 _buildRectangleList(),
                 Row(
                   children: [
@@ -424,7 +502,7 @@ class _AlertState extends State<Alert> {
     );
   }
 
-  Widget numPicker(seasoningItem recipeItem) {
+  Widget numPicker(SeasoningItem recipeItem) {
     return Column(
       children: [
         Row(
@@ -438,7 +516,7 @@ class _AlertState extends State<Alert> {
               ),
             ),
             // ),
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width * 0.1,
               height: MediaQuery.of(context).size.height * 0.055,
               child: NumberPicker(
@@ -466,7 +544,7 @@ class _AlertState extends State<Alert> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width * 0.1,
               height: MediaQuery.of(context).size.height * 0.055,
               child: NumberPicker(
@@ -527,7 +605,7 @@ class _AlertState extends State<Alert> {
   // }
 }
 // --------------------------------------------------------------------------------
-// class seasoningItemCount {
+// class SeasoningItemCount {
 //   static int s = 0;
 //   static void setSeasoningItemCount() {
 //     ;

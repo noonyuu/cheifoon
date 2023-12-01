@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../db/database_helper.dart';
-import '../model/admin_botle/admin_bottle_model.dart';
+import '../model/admin_bottle/admin_bottle_model.dart';
 
 
 class BottleAdminController {

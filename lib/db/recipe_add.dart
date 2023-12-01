@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
-import 'endPoint.dart';
+import 'end_point.dart';
 
 // Future<String> postRecipe(int userId, String recipe, File file) async {
 // String image = file.toString();
 // print(recipe);
 
-// String url = 'http://${get_end_point()}:8081/recipe/add';
+// String url = 'http://${getEndPoint()}:8081/recipe/add';
 
 // // リクエストヘッダーにユーザーIDを追加
 // Map<String, dynamic> headers = {'user_id': userId.toString()};
@@ -31,7 +31,7 @@ import 'endPoint.dart';
 // }
 
 // final response = await http.post(
-//   Uri.parse('http://${get_end_point()}:8081/recipe/add'),
+//   Uri.parse('http://${getEndPoint()}:8081/recipe/add'),
 //   headers: <String, String>{
 //     'Content-Type': 'application/json; charset=UTF-8',
 //   },
@@ -64,7 +64,7 @@ import 'endPoint.dart';
 //   "recipe_name": recipe,
 // };
 // // エンドポイント
-// var url = Uri.parse('http://${get_end_point()}:8081/recipe/add');
+// var url = Uri.parse('http://${getEndPoint()}:8081/recipe/add');
 
 // var request = http.MultipartRequest('POST', url);
 
@@ -92,7 +92,7 @@ import 'endPoint.dart';
 
 Future<int> postRecipe(int userId, String recipe, File file) async {
   // エンドポイント
-  final url = Uri.parse('http://${get_end_point()}:8081/recipe/add');
+  final url = Uri.parse('http://${getEndPoint()}:8081/recipe/add');
   final request = http.MultipartRequest('POST', url);
 
   // フォームデータとしてuserIdとrecipeを追加
