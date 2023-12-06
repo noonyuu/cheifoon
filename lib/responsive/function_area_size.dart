@@ -33,7 +33,7 @@ PotionPoint potionPoint(PhoneSize size) {
 extension PotionPointExtension on PhoneSize {
   PotionPoint get showSeasoningSize => switch (this) {
         PhoneSize.verticalMobile => PotionPoint(
-            top: 0.09,
+            top: 0.095,
             left: 0.05,
           ),
         PhoneSize.horizonMobile => PotionPoint(

@@ -65,8 +65,8 @@ ButtonSize buttonSize(PhoneSize size) {
 extension ButtonSizeExtension on PhoneSize {
   ButtonSize get buttonSize => switch (this) {
         PhoneSize.verticalMobile => ButtonSize(
-            height: 0.05,
-            width: 0.15,
+            height: 0.04,
+            width: 0.1,
             textSize: 10,
           ),
         PhoneSize.horizonMobile => ButtonSize(
