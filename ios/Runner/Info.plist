@@ -51,5 +51,7 @@
 		<string>写真を撮るためには許可が必要です</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>このアプリはマイクの使用許可が必要です。録音を行うためにマイクにアクセスします。</string>
 	</dict>
 </plist>

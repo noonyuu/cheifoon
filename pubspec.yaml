@@ -29,30 +29,26 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  bordered_text: ^2.0.0
+  camera: ^0.10.5+5
   flutter:
     sdk: flutter
-  sqflite: 2.3.0
-  flutter_svg: ^2.0.7
+  flutter_native_splash: ^2.3.7
+  flutter_svg: ^2.0.9
+  font_awesome_flutter: ^10.6.0
+  freezed_annotation: ^2.4.1
+  google_fonts: ^6.1.0
+  http: ^1.1.2
+  image_picker: ^1.0.4
+  marquee: ^2.2.3
+  numberpicker: ^2.1.2
+  path_provider: ^2.1.1
+  provider: ^6.1.1
+  sqflite: ^2.3.0
+  vector_math: ^2.1.4
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
-  path_provider: ^2.1.0
-  camera: ^0.10.5+3
-  path: ^1.8.3
-  http: ^1.1.0
-  numberpicker: ^2.1.2
-  font_awesome_flutter: ^10.5.0
-  flutter_native_splash: ^2.3.2
-  marquee: ^2.2.3
-  http_parser: ^4.0.2
-  dio: ^5.3.3
-  flutter_riverpod: ^2.4.5
-  freezed_annotation: ^2.4.1
-  freezed: ^2.4.5
-  build_runner: ^2.4.6
-  json_serializable: ^6.7.1
-  image_picker: ^1.0.4
 
 dev_dependencies:
   flutter_test:
@@ -66,16 +62,16 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_launcher_icons: ^0.13.1
 
-# flutter_icons:
-#   android: true
-#   ios: true
-#   image_path: "assets/images/icon.png"
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/cheifoon-logo.png"
 
-# flutter_native_splash:
-#   color: "#FFEDAE"
-#   image: "assets/images/splash.png"
-#   android: true
-#   ios: true
+flutter_native_splash:
+  color: "#FFEDAE"
+  image: "assets/cheifoon-logo.png"
+  android: true
+  ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
