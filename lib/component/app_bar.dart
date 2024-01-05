@@ -26,28 +26,24 @@ class AppBarComponentWidget extends StatelessWidget {
     SizeConfig sizeConfig = SizeConfig();
     sizeConfig.init(context);
     return AppBar(
-      backgroundColor: Colors.transparent,
+      automaticallyImplyLeading: false,
       elevation: 0,
       flexibleSpace: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              'assets/silver.jpg',
-              fit: BoxFit.fill,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: ColorConst.mainColors,
+              ),
             ),
           ),
           Center(
-            child: BorderedText(
-              strokeWidth: 2.0,
-              strokeColor: ColorConst.paleYellow,
-              child: Text(
-                title,
-                style: GoogleFonts.kellySlab(
-                  color: Colors.white,
-                  letterSpacing: 6.0,
-                  fontSize: fontSize(size),
-                  fontWeight: FontWeight.bold,
-                ),
+            child: Text(
+              title,
+              style: TextStyle(
+                color: Colors.black,
+                letterSpacing: 6.0,
+                fontSize: fontSize(size),
               ),
             ),
           ),
@@ -67,5 +63,18 @@ extension FontSizeExtension on PhoneSize {
         PhoneSize.horizonMobile => 25,
         PhoneSize.verticalTablet => 50,
         PhoneSize.horizonTablet => 50,
+      };
+}
+
+double appBar(PhoneSize size) {
+  return (size.appBarSize);
+}
+
+extension AppBarSize on PhoneSize {
+  double get appBarSize => switch (this) {
+        PhoneSize.verticalMobile => 0.07,
+        PhoneSize.horizonMobile => 0.1,
+        PhoneSize.verticalTablet => 0.1,
+        PhoneSize.horizonTablet => 0.1,
       };
 }
