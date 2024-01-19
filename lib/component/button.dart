@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sazikagen/constant/color_constant.dart';
 
 import '../constant/layout.dart';
 
@@ -9,6 +10,7 @@ class CustomButton extends StatelessWidget {
     required this.height,
     required this.width,
     required this.textSize,
+    required this.onPressed,
     // required this.pageName,
   });
 
@@ -16,6 +18,7 @@ class CustomButton extends StatelessWidget {
   final double height;
   final double width;
   final double textSize;
+  final Function onPressed;
   // final Widget pageName;
 
   @override
@@ -26,17 +29,19 @@ class CustomButton extends StatelessWidget {
     return OutlinedButton(
       style: ElevatedButton.styleFrom(
         minimumSize: Size(sizeConfig.screenWidth * width, sizeConfig.screenHeight * height),
-        foregroundColor: Colors.black,
-        backgroundColor: null,
+        foregroundColor: ColorConst.black,
+        backgroundColor: ColorConst.mainColors,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
         side: const BorderSide(
-          color: Colors.black,
+          color: ColorConst.black,
           width: 1,
         ),
       ),
-      onPressed: () {},
+      onPressed: () {
+        onPressed();
+      },
       child: Text(
         buttonTitle,
         style: TextStyle(fontSize: textSize),

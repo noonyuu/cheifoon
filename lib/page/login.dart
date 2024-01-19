@@ -9,10 +9,10 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sazikagen/component/button.dart';
-import 'package:sazikagen/component/tabView.dart';
 import 'package:sazikagen/constant/color_constant.dart';
 import 'package:sazikagen/validator/min_lingth_validator.dart';
 
+import '../component/text_field.dart';
 import '../db/create_room.dart';
 import '../validator/email_validator.dart';
 import '../validator/max_lingth_validator.dart';

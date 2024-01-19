@@ -1,128 +1,68 @@
 import 'package:flutter/material.dart';
 
 import '../constant/color_constant.dart';
-import '../constant/layout.dart';
+import '../validator/validator.dart';
 
-class CustomTextField extends StatelessWidget {
+class TextView extends StatefulWidget {
   final String labelText;
-  final String hintText;
-  final bool obscureText;
-  final double height;
-  final double width;
-  final double labelSize;
-  final double hintSize;
-  final double textField;
-  final Function onChanged;
+  final List<Validator> validator;
+  final Function controller;
+  final Function setIsValid;
+  final bool secret;
 
-  const CustomTextField(
-      {Key? key,
-      required this.labelText,
-      required this.hintText,
-      required this.obscureText,
-      required this.height,
-      required this.width,
-      required this.labelSize,
-      required this.hintSize,
-      required this.textField,
-      required this.onChanged})
-      : super(key: key);
+  const TextView({Key? key, required this.labelText, required this.validator, required this.controller, required this.secret, required this.setIsValid}) : super(key: key);
+
+  @override
+  State<TextView> createState() => _TextViewState();
+}
+
+class _TextViewState extends State<TextView> {
+  /// エラーテキスト
+  String? _errorText;
+
+  void _validate(String value) {
+    widget.controller(value);
+    final result = widget.validator.where((validator) => validator.validate(value) == false).toList();
+    if (result.isNotEmpty) {
+      _errorText = result.first.getMessage();
+      widget.setIsValid(false);
+    } else {
+      _errorText = null;
+      widget.setIsValid(true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    String? inputRecipe;
-
-    SizeConfig sizeConfig = SizeConfig();
-    sizeConfig.init(context);
-
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: sizeConfig.screenWidth * width,
-          height: sizeConfig.screenHeight * height,
-          child: TextField(
-            style: TextStyle(fontSize: textField),
-            decoration: InputDecoration(
-              labelText: labelText,
-              labelStyle: TextStyle(color: ColorConst.mainColor, fontSize: labelSize),
-              hintText: hintText,
-              hintStyle: TextStyle(color: ColorConst.hintColor, fontSize: hintSize),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                  color: ColorConst.mainColor,
-                ),
-              ),
-              contentPadding: EdgeInsets.all(textField),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                  color: ColorConst.mainColor,
-                ),
+      children: <Widget>[
+        TextFormField(
+          onChanged: (String value) {
+            _validate(value);
+          },
+          decoration: InputDecoration(
+            labelText: widget.labelText,
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.normal,
+              color: ColorConst.grey,
+            ),
+            // hintText: labelText,
+            enabledBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: ColorConst.grey,
               ),
             ),
-            obscureText: obscureText,
-            onChanged: (value) {
-              onChanged();
-            },
           ),
+          obscureText: widget.secret,
+          // controller: widget.controller(),
         ),
+        _errorText != null
+            ? Text(
+                _errorText!,
+                style: const TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+              )
+            : const SizedBox()
       ],
     );
   }
-}
-
-// フィールドのサイズ
-class FieldSize {
-  final double height;
-  final double width;
-  final double labelSize;
-  final double hintSize;
-  final double textField;
-
-  FieldSize({
-    required this.height,
-    required this.width,
-    required this.labelSize,
-    required this.hintSize,
-    required this.textField,
-  });
-}
-
-FieldSize fieldSize(PhoneSize size) {
-  return (size.fieldSize);
-}
-
-extension FieldSizeExtension on PhoneSize {
-  FieldSize get fieldSize => switch (this) {
-        PhoneSize.verticalMobile => FieldSize(
-            height: 0.05,
-            width: 0.5,
-            labelSize: 20,
-            hintSize: 10,
-            textField: 20,
-          ),
-        PhoneSize.horizonMobile => FieldSize(
-            height: 0.1,
-            width: 0.3,
-            labelSize: 20,
-            hintSize: 10,
-            textField: 30,
-          ),
-        PhoneSize.verticalTablet => FieldSize(
-            height: 0.07,
-            width: 0.3,
-            labelSize: 20,
-            hintSize: 20,
-            textField: 30,
-          ),
-        PhoneSize.horizonTablet => FieldSize(
-            height: 0.2,
-            width: 0.3,
-            labelSize: 20,
-            hintSize: 20,
-            textField: 30,
-          ),
-      };
 }
