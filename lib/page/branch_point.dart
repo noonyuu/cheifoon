@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sazikagen/page/home_page.dart';
+import '../component/loading.dart';
+import '../constant/color_constant.dart';
 import '../constant/layout.dart';
 import '../controller/admin_bottle_controller.dart';
 import '../controller/recipe_controller.dart';
@@ -51,7 +53,12 @@ class _BranchPoint extends State<BranchPoint> {
 
   late SizeConfig sizeConfig;
 
-  bool _tunnel = false;
+  Map<dynamic, bool> fetchCheck = {
+    'menu': false,
+    'bottle': false,
+    'adminBottle': false,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -70,64 +77,32 @@ class _BranchPoint extends State<BranchPoint> {
     });
     // レシピデータを取得
     await RecipeController.menuList().then((menuList) {
-      print('r');
       setState(() {
         _recipePost = menuList;
-        isMenuLading = false;
+        if (menuList.isNotEmpty) {
+          fetchCheck['menu'] = true;
+        }
       });
     });
     await BottleController.bottleList().then((bottleList) {
       print('b');
       setState(() {
         _bottlePost = bottleList;
-        isBottleLading = false;
+        fetchCheck['bottle'] = true;
       });
     });
     await BottleAdminController.bottleList().then((bottleList) {
-      print('ra');
       setState(() {
         _bottleAdmin = bottleList;
-        _tunnel = true;
+        fetchCheck['adminBottle'] = true;
       });
     });
   }
 
-  // Future<void> _initializeState() async {
-  //   setState(() {
-  //     // 各データを初期化
-  //     _recipePost.clear();
-  //     _bottlePost.clear();
-  //     _bottleAdmin.clear();
-  //     // 各フラグを初期化
-  //     isMenuLading = true;
-  //     isBottleLading = true;
-  //   });
-  //   // レシピデータを取得
-  //   await RecipeController.menuList().then((menuList) {
-  //     setState(() {
-  //       _recipePost = menuList;
-  //       fetchCheck['menu'] = true;
-  //     });
-  //   }); // ユーザーがセットした調味料を取得
-  //   await BottleController.bottleList().then((bottleList) {
-  //     setState(() {
-  //       _bottlePost = bottleList;
-  //       fetchCheck['bottle'] = true;
-  //     });
-  //   }); // 用意されてる調味料を取得
-  //   await BottleAdminController.bottleList().then((bottleList) {
-  //     setState(() {
-  //       fetchCheck['adminBottle'] = true;
-  //     });
-  //   });
-  // }
-
-  int count = 1;
   @override
   Widget build(BuildContext context) {
-    print(count++);
     // if (fetchCheck.values.every((value) => value == true)) {
-    if (_tunnel) {
+    if (fetchCheck.values.every((value) => value == true)) {
       sizeConfig = SizeConfig();
       sizeConfig.init(context);
       if (sizeConfig.orientation == Orientation.portrait && sizeConfig.screenWidth < mobileWidth) {
@@ -145,6 +120,7 @@ class _BranchPoint extends State<BranchPoint> {
           size: PhoneSize.horizonMobile,
         );
       } else if (sizeConfig.orientation == Orientation.portrait && sizeConfig.screenWidth <= tabletWidth) {
+        print("縦");
         return HomePage(
           recipePost: _recipePost,
           bottlePost: _bottlePost,
@@ -152,7 +128,7 @@ class _BranchPoint extends State<BranchPoint> {
           size: PhoneSize.verticalTablet,
         );
       } else {
-        print("turn");
+        print("横");
         return HomePage(
           recipePost: _recipePost,
           bottlePost: _bottlePost,
@@ -161,13 +137,8 @@ class _BranchPoint extends State<BranchPoint> {
         );
       }
     } else {
-      return const Center(
-        // プログレスインディケーターの表示
-        child: SizedBox(
-          height: 50,
-          width: 50,
-          child: CircularProgressIndicator(),
-        ),
+      return Loading(
+        size: PhoneSize.horizonTablet,
       );
     }
   }
