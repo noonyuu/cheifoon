@@ -1,3 +1,6 @@
 {
-  "cSpell.words": ["cheifoon"]
+  "cSpell.words": ["cheifoon", "RGBO", "varchar", "vsync"],
+  "[markdown]": {
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+  }
 }
