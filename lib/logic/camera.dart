@@ -71,15 +71,15 @@ class _CameraState extends State<Camera> {
       child: Scaffold(
         body: Stack(
           children: [
-            Container(
-              height: MediaQuery.of(context).size.height * 1.0, // 高さを指定,
-              width: MediaQuery.of(context).size.height * 0.6, // 高さを指定,
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 1.0,
+              width: MediaQuery.of(context).size.width * 1.0,
               child: cameraPreview,
             ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.only(bottom: 20),
                 child: GestureDetector(
                   onTap: () async {
                     if (!_controller.value.isTakingPicture) {
@@ -95,7 +95,7 @@ class _CameraState extends State<Camera> {
                       );
                     }
                   },
-                  child: FaIcon(
+                  child: const FaIcon(
                     FontAwesomeIcons.circleDot,
                     color: ColorConst.mainColor,
                     size: 50.0, // 任意のサイズを指定
@@ -151,7 +151,7 @@ class ImagePreview extends StatelessWidget {
                     int count = 0;
                     Navigator.popUntil(context, (_) => count++ >= 2);
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                   style: ElevatedButton.styleFrom(backgroundColor: ColorConst.mainColor),
                 ),
               ],
