@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constant/color_constant.dart';
+import '../validator/room_id_duplicate.dart';
 import '../validator/validator.dart';
 
 class TextView extends StatefulWidget {
@@ -18,15 +19,39 @@ class TextView extends StatefulWidget {
 
 class _TextViewState extends State<TextView> {
   /// エラーテキスト
-  String? _errorText;
+  String? _errorText = "必須項目です";
 
-  void _validate(String value) {
+  Future<void> _validate(String value) async {
     widget.controller(value);
-    final result = widget.validator.where((validator) => validator.validate(value) == false).toList();
-    if (result.isNotEmpty) {
-      _errorText = result.first.getMessage();
-      widget.setIsValid(false);
-    } else {
+
+    bool validationFailed = false;
+
+    for (var validator in widget.validator) {
+      if (validator is RoomIdDuplicateValidator) {
+        await widget.validator[0].validateAwait(value).then((result) async {
+          if (await widget.validator[0].validateAwait(value)) {
+            _errorText = widget.validator[0].getMessage();
+            widget.setIsValid(false);
+            validationFailed = true;
+          } else {
+            _errorText = null;
+            widget.setIsValid(true);
+          }
+        });
+      } else {
+        if (!validator.validate(value)) {
+          _errorText = validator.getMessage();
+          widget.setIsValid(false);
+          validationFailed = true;
+          break;
+        } else {
+          // _errorText = null;
+          widget.setIsValid(true);
+        }
+      }
+    }
+
+    if (!validationFailed) {
       _errorText = null;
       widget.setIsValid(true);
     }

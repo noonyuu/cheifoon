@@ -10,4 +10,9 @@ class MinLengthValidator implements Validator<String> {
 
   @override
   String getMessage() => '$minLength${"文字以上で入力してください"}';
+
+  @override
+  Future<bool> validateAwait(String? value) {
+    return Future.value(validate(value!));
+  }
 }

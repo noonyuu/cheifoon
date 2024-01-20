@@ -10,4 +10,9 @@ class MaxLengthValidator implements Validator<String> {
 
   @override
   String getMessage() => '$maxLength${"文字以内で入力してください"}';
+
+  @override
+  Future<bool> validateAwait(String? value) {
+    return Future.value(validate(value!));
+  }
 }

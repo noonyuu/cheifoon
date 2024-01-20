@@ -12,4 +12,9 @@ class RequiredValidator implements Validator<String?> {
 
   @override
   String getMessage() => "必須項目です";
+  
+  @override
+  Future<bool> validateAwait(String? value) {
+    return Future.value(validate(value));
+  }
 }

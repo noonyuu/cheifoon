@@ -1,22 +1,14 @@
-// import 'dart:ui';
-
-// import 'package:flutter/cupertino.dart';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-// import 'package:flutter/painting.dart';
-// import 'package:flutter/rendering.dart';
-// import 'package:flutter/widgets.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:sazikagen/component/button.dart';
-import 'package:sazikagen/constant/color_constant.dart';
-import 'package:sazikagen/validator/min_lingth_validator.dart';
 
+import '../component/button.dart';
 import '../component/text_field.dart';
+import '../constant/color_constant.dart';
 import '../db/create_room.dart';
 import '../validator/email_validator.dart';
-import '../validator/max_lingth_validator.dart';
+import '../validator/max_length_validator.dart';
+import '../validator/min_length_validator.dart';
 import '../validator/required_validator.dart';
+import '../validator/room_id_duplicate.dart';
 import 'branch_point.dart';
 
 class LogInScreen extends StatefulWidget {
@@ -57,7 +49,7 @@ class _LogInScreenState extends State<LogInScreen> with SingleTickerProviderStat
             weight: 0.25),
         TweenSequenceItem(tween: Tween<double>(begin: 1, end: 1), weight: 0.41),
         TweenSequenceItem(
-            tween: Tween<double>(begin: 1, end: 0.5).chain(
+            tween: Tween<double>(begin: 1, end: 0.4).chain(
               CurveTween(curve: Curves.decelerate),
             ),
             weight: 0.33),
@@ -178,16 +170,24 @@ class _LogInFormState extends State<LogInForm> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   // 入力値
+  String _roomId = "";
   String _roomName = "";
   String _email = "";
   String _password = "";
 
-  /// バリデーション結果
+  // バリデーション結果
+  bool _isValidRoomId = false;
   bool _isValidName = false;
   bool _isValidPass = false;
   bool _isValidEmail = false;
 
   // 入力値を保持
+  void _setRoomId(String roomName) {
+    setState(() {
+      _roomId = roomName;
+    });
+  }
+
   void _setName(String roomName) {
     setState(() {
       _roomName = roomName;
@@ -207,22 +207,32 @@ class _LogInFormState extends State<LogInForm> {
   }
 
   // バリデーションの結果を保持
-  void _setIsvalidRoomName(bool isValid) {
+  void _setIsValidRoomId(bool isValid) {
+    setState(() {
+      _isValidRoomId = isValid;
+    });
+  }
+
+  void _setIsValidRoomName(bool isValid) {
     setState(() {
       _isValidName = isValid;
     });
   }
 
-  void _setIsvalidEmail(bool isValid) {
+  void _setIsValidEmail(bool isValid) {
     setState(() {
       _isValidEmail = isValid;
     });
   }
 
-  void _setIsvalidPass(bool isValid) {
+  void _setIsValidPass(bool isValid) {
     setState(() {
       _isValidPass = isValid;
     });
+  }
+
+  bool _isValid() {
+    return _isValidRoomId && _isValidName && _isValidEmail && _isValidPass;
   }
 
   @override
@@ -236,60 +246,79 @@ class _LogInFormState extends State<LogInForm> {
             height: MediaQuery.of(context).size.height * 0.4,
             child: TabBarView(
               children: <Widget>[
-                Column(
-                  children: [
-                    TextView(
-                      labelText: "ルーム名(16文字以内)",
-                      controller: _setName,
-                      validator: [RequiredValidator(), MaxLengthValidator(16), MinLengthValidator(2)],
-                      setIsValid: _setIsvalidRoomName,
-                      secret: false,
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.01,
-                    ),
-                    TextView(
-                      labelText: "Email",
-                      controller: _setEmail,
-                      validator: [RequiredValidator(), EmailValidator(_email)],
-                      setIsValid: _setIsvalidEmail,
-                      secret: false,
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.01,
-                    ),
-                    TextView(
-                      labelText: "Password",
-                      controller: _setPassword,
-                      validator: [RequiredValidator(), MinLengthValidator(8)],
-                      setIsValid: _setIsvalidPass,
-                      secret: true,
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.01,
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.1,
-                      alignment: Alignment.bottomCenter,
-                      child: CustomButton(
-                        buttonTitle: "作成",
-                        height: 0.05,
-                        width: 30,
-                        textSize: 20,
-                        onPressed: () async {
-                          Map<String, dynamic> room = {};
-                          room.addAll({'room_name': _roomName, 'password': _password, 'email': _email});
-                          await postRoom(room);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const BranchPoint(),
-                            ),
-                          );
-                        },
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TextView(
+                        labelText: "ルームID(16文字以内・半角英数字)",
+                        controller: _setRoomId,
+                        validator: [RoomIdDuplicateValidator(_roomId), RequiredValidator(), MaxLengthValidator(16), MinLengthValidator(2)],
+                        setIsValid: _setIsValidRoomId,         
+                        secret: false,
                       ),
-                    ),
-                  ],
+                      TextView(
+                        labelText: "ルーム名(16文字以内)",
+                        controller: _setName,
+                        validator: [RequiredValidator(), MaxLengthValidator(16), MinLengthValidator(2)],
+                        setIsValid: _setIsValidRoomName,
+                        secret: false,
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.01,
+                      ),
+                      TextView(
+                        labelText: "Email",
+                        controller: _setEmail,
+                        validator: [RequiredValidator(), EmailValidator(_email)],
+                        setIsValid: _setIsValidEmail,
+                        secret: false,
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.01,
+                      ),
+                      TextView(
+                        labelText: "Password",
+                        controller: _setPassword,
+                        validator: [RequiredValidator(), MinLengthValidator(8)],
+                        setIsValid: _setIsValidPass,
+                        secret: true,
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.01,
+                      ),
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.1,
+                        alignment: Alignment.bottomCenter,
+                        child: CustomButton(
+                          buttonTitle: "作成",
+                          height: 0.05,
+                          width: 30,
+                          textSize: 20,
+                          onPressed: () async {
+                              print('_isValidRoomId : $_isValidRoomId');
+                              print('_isValidName : $_isValidName');
+                              print('_isValidEmail : $_isValidEmail');
+                              print('_isValidPass : $_isValidPass');
+
+
+                            if (_isValid()) {
+                              Map<String, dynamic> room = {};
+                              room.addAll({'room_id': _roomId, 'room_name': _roomName, 'password': _password, 'email': _email});
+
+                              await postRoom(room);
+                              
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const BranchPoint(),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Column(
                   children: [
@@ -300,7 +329,7 @@ class _LogInFormState extends State<LogInForm> {
                         RequiredValidator(),
                         MaxLengthValidator(16),
                       ],
-                      setIsValid: _setIsvalidRoomName,
+                      setIsValid: _setIsValidRoomName,
                       secret: false,
                     ),
                     SizedBox(
@@ -312,7 +341,7 @@ class _LogInFormState extends State<LogInForm> {
                       validator: [
                         RequiredValidator(),
                       ],
-                      setIsValid: _setIsvalidEmail,
+                      setIsValid: _setIsValidEmail,
                       secret: false,
                     ),
                     SizedBox(
@@ -324,7 +353,7 @@ class _LogInFormState extends State<LogInForm> {
                       validator: [
                         RequiredValidator(),
                       ],
-                      setIsValid: _setIsvalidPass,
+                      setIsValid: _setIsValidPass,
                       secret: true,
                     ),
                     SizedBox(
@@ -339,18 +368,18 @@ class _LogInFormState extends State<LogInForm> {
                         width: 30,
                         textSize: 20,
                         onPressed: () async {
-                          Map<String, dynamic> room = {};
-                          room.addAll({
-                            'room_name': roomNameController.text,
-                            'password': passwordController.text,
-                          });
-                          await postRoom(room);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const BranchPoint(),
-                            ),
-                          );
+                          // Map<String, dynamic> room = {};
+                          // room.addAll({
+                          //   'room_name': roomNameController.text,
+                          //   'password': passwordController.text,
+                          // });
+                          // await postRoom(room);
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => const BranchPoint(),
+                          //   ),
+                          // );
                         },
                       ),
                     ),
@@ -441,7 +470,7 @@ class Logo extends StatelessWidget {
       child: Image.asset(
         'assets/dragon.png',
         // color: background,
-        height: MediaQuery.of(context).size.height * logoSizeAnimation.value * 0.8,
+        height: MediaQuery.of(context).size.height * logoSizeAnimation.value * 0.6,
         // size: logoSizeAnimation.value * 150,
       ),
     );

@@ -10,4 +10,10 @@ class EmailValidator implements Validator<String> {
 
   @override
   String getMessage() => "正しい形式で入力してください";
+
+  @override
+  Future<bool> validateAwait(String? value) {
+    return Future.value(validate(value!));
+  }
 }
+
