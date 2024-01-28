@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:motion_tab_bar/MotionBadgeWidget.dart';
 import 'package:motion_tab_bar/MotionTabBar.dart';
 import 'package:motion_tab_bar/MotionTabBarController.dart';
-import 'package:provider/provider.dart';
 
 import '../component/app_bar.dart';
-import '../component/button.dart';
 import '../component/card_recipe.dart';
-import '../component/card_seasoninig.dart';
+import '../component/card_seasoning.dart';
 import '../component/insert_seasoning_alert.dart';
 import '../component/loading.dart';
-import '../component/rack.dart';
-import '../component/text_field.dart';
 import '../constant/color_constant.dart';
 import '../constant/layout.dart';
 import '../controller/admin_bottle_controller.dart';
@@ -22,10 +17,9 @@ import '../model/insert_bottle_model.dart';
 import '../model/recipe/recipe_model.dart';
 import '../model/rectangle_model.dart';
 import '../model/user_bottle/user_bottle_model.dart';
-import '../responsive/function_area_size.dart';
-import '../responsive/show_seasoning_size.dart';
-import 'add_alert.dart';
+import '../Gacha_icons.dart';
 import 'add_recipe.dart';
+import 'gacha.dart';
 
 class HomePage extends StatefulWidget {
   final List<Recipe> recipePost;
@@ -170,129 +164,132 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         size: PhoneSize.horizonTablet,
       );
     } else {
-      return SafeArea(
-        child: DefaultTabController(
-          initialIndex: 0,
-          length: 2,
-          child: Scaffold(
-            resizeToAvoidBottomInset: false, // キーボードを被せる
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(sizeConfig.screenHeight * appBar(_size)),
-              child: AppBarComponentWidget(
-                title: 'Cheifoon',
-                isInfoIconEnabled: true,
-                context: context,
-                size: _size,
-              ),
-            ), // リフレッシュ
-            bottomNavigationBar: MotionTabBar(
-              controller: _motionTabBarController, // ADD THIS if you need to change your tab programmatically
-              initialSelectedTab: "Home",
-              labels: const ["Dashboard", "Home", "Settings"],
-              icons: const [Icons.dashboard, Icons.home, Icons.settings],
-
-              // optional badges, length must be same with labels
-              // badges: [
-              //   // Default Motion Badge Widget
-              //   const MotionBadgeWidget(
-              //     text: '99+',
-              //     textColor: Colors.white, // optional, default to Colors.white
-              //     color: Colors.red, // optional, default to Colors.red
-              //     size: 18, // optional, default to 18
-              //   ),
-
-              //   // custom badge Widget
-              //   Container(
-              //     color: Colors.black,
-              //     padding: const EdgeInsets.all(2),
-              //     child: const Text(
-              //       '48',
-              //       style: TextStyle(
-              //         fontSize: 14,
-              //         color: Colors.white,
-              //       ),
-              //     ),
-              //   ),
-
-              //   // Default Motion Badge Widget with indicator only
-              //   const MotionBadgeWidget(
-              //     isIndicator: true,
-              //     color: Colors.red, // optional, default to Colors.red
-              //     size: 5, // optional, default to 5,
-              //     show: true, // true / false
-              //   ),
-              // ],
-              tabSize: 50,
-              tabBarHeight: 55,
-              textStyle: const TextStyle(
-                fontSize: 12,
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-              ),
-              tabIconColor: ColorConst.black,
-              tabIconSize: 28.0,
-              tabIconSelectedSize: 26.0,
-              tabSelectedColor: ColorConst.strongMainColors,
-              tabIconSelectedColor: Colors.white,
-              tabBarColor: ColorConst.mainColors,
-              onTabItemSelected: (int value) {
-                setState(() {
-                  // _tabController!.index = value;
-                  _motionTabBarController!.index = value;
-                });
-              },
-            ),
-            body: TabBarView(
-              physics: const NeverScrollableScrollPhysics(), // swipe navigation handling is not supported
-              controller: _motionTabBarController,
-              children: <Widget>[
-                MainPageContentComponent(title: "set", controller: _motionTabBarController!),
-                // MainPageContentComponent(title: "Home Page", controller: _motionTabBarController!),
-                OrientationBuilder(
-                  builder: (context, orientation) {
-                    // _bottlePost.clear();
-                    // loadData();
-                    screenReset();
-                    return RefreshIndicator(
-                      onRefresh: () async {
-                        // 新しいデータを取得する処理
-                        _initializeState();
-                      },
-                      child: Column(
-                        children: [
-                          Container(
-                            color: ColorConst.mainColors,
-                            child: const TabBar(
-                              tabs: <Widget>[
-                                SizedBox(
-                                  width: 100,
-                                  child: Tab(text: 'レシピ'),
-                                ),
-                                SizedBox(
-                                  width: 100,
-                                  child: Tab(text: '調味料'),
-                                ),
-                              ],
-                              unselectedLabelColor: ColorConst.grey,
-                              labelColor: ColorConst.black,
-                              indicatorColor: ColorConst.strongMainColors,
-                            ),
-                          ),
-                          Expanded(
-                            child: TabBarView(children: <Widget>[
-                              // レシピ
-                              recipeTabContent(_recipePost),
-                              seasoningTabContent(_bottlePost),
-                            ]),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+      return PopScope(
+        canPop: false,
+        child: SafeArea(
+          child: DefaultTabController(
+            initialIndex: 0,
+            length: 2,
+            child: Scaffold(
+              resizeToAvoidBottomInset: false, // キーボードを被せる
+              appBar: PreferredSize(
+                preferredSize: Size.fromHeight(sizeConfig.screenHeight * appBar(_size)),
+                child: AppBarComponentWidget(
+                  title: 'Cheifoon',
+                  isInfoIconEnabled: true,
+                  context: context,
+                  size: _size,
                 ),
-                // MainPageContentComponent(title: "Settings Page", controller: _motionTabBarController!),
-                Loading(size: PhoneSize.horizonTablet),
-              ],
+              ), // リフレッシュ
+              bottomNavigationBar: MotionTabBar(
+                controller: _motionTabBarController, // ADD THIS if you need to change your tab programmatically
+                initialSelectedTab: "ホーム",
+                labels: const ["Dashboard", "ホーム", "ガチャ"],
+                icons: const [Icons.dashboard, Icons.home, Gacha.gacha],
+
+                // optional badges, length must be same with labels
+                // badges: [
+                //   // Default Motion Badge Widget
+                //   const MotionBadgeWidget(
+                //     text: '99+',
+                //     textColor: Colors.white, // optional, default to Colors.white
+                //     color: Colors.red, // optional, default to Colors.red
+                //     size: 18, // optional, default to 18
+                //   ),
+
+                //   // custom badge Widget
+                //   Container(
+                //     color: Colors.black,
+                //     padding: const EdgeInsets.all(2),
+                //     child: const Text(
+                //       '48',
+                //       style: TextStyle(
+                //         fontSize: 14,
+                //         color: Colors.white,
+                //       ),
+                //     ),
+                //   ),
+
+                //   // Default Motion Badge Widget with indicator only
+                //   const MotionBadgeWidget(
+                //     isIndicator: true,
+                //     color: Colors.red, // optional, default to Colors.red
+                //     size: 5, // optional, default to 5,
+                //     show: true, // true / false
+                //   ),
+                // ],
+                tabSize: 50,
+                tabBarHeight: 55,
+                textStyle: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                ),
+                tabIconColor: ColorConst.black,
+                tabIconSize: 30.0,
+                tabIconSelectedSize: 35.0,
+                tabSelectedColor: ColorConst.strongMainColors,
+                tabIconSelectedColor: Colors.white,
+                tabBarColor: ColorConst.mainColors,
+                onTabItemSelected: (int value) {
+                  setState(() {
+                    // _tabController!.index = value;
+                    _motionTabBarController!.index = value;
+                  });
+                },
+              ),
+              body: TabBarView(
+                physics: const NeverScrollableScrollPhysics(), // swipe navigation handling is not supported
+                controller: _motionTabBarController,
+                children: <Widget>[
+                  MainPageContentComponent(title: "set", controller: _motionTabBarController!),
+                  // MainPageContentComponent(title: "Home Page", controller: _motionTabBarController!),
+                  OrientationBuilder(
+                    builder: (context, orientation) {
+                      // _bottlePost.clear();
+                      // loadData();
+                      screenReset();
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          // 新しいデータを取得する処理
+                          _initializeState();
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                              color: ColorConst.mainColors,
+                              child: const TabBar(
+                                tabs: <Widget>[
+                                  SizedBox(
+                                    width: 100,
+                                    child: Tab(text: 'レシピ'),
+                                  ),
+                                  SizedBox(
+                                    width: 100,
+                                    child: Tab(text: '調味料'),
+                                  ),
+                                ],
+                                unselectedLabelColor: ColorConst.grey,
+                                labelColor: ColorConst.black,
+                                indicatorColor: ColorConst.strongMainColors,
+                              ),
+                            ),
+                            Expanded(
+                              child: TabBarView(children: <Widget>[
+                                // レシピ
+                                recipeTabContent(_recipePost),
+                                seasoningTabContent(_bottlePost),
+                              ]),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  // MainPageContentComponent(title: "Settings Page", controller: _motionTabBarController!),
+                  SingleShotLottie(asset: 'assets/gacha.json'),
+                ],
+              ),
             ),
           ),
         ),

@@ -40,11 +40,13 @@ dependencies:
   google_fonts: ^6.1.0
   http: ^1.1.2
   image_picker: ^1.0.4
+  lottie: ^3.0.0
   marquee: ^2.2.3
   motion_tab_bar: ^2.0.4
   numberpicker: ^2.1.2
   path_provider: ^2.1.1
   provider: ^6.1.1
+  shared_preferences: ^2.2.2
   sqflite: ^2.3.0
   vector_math: ^2.1.4
 
@@ -90,6 +92,7 @@ flutter:
     - assets/
     - assets/images/
     - assets/images/recipe/
+    - assets/gacha.json
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
@@ -107,9 +110,9 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: MyFlutterApp
+    - family: Gacha
       fonts:
-        - asset: fonts/MyFlutterApp.ttf
+        - asset: fonts/Gacha.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
